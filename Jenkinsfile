@@ -19,7 +19,7 @@ pipeline {
       }
       stage('构建镜像') {
         steps {
-          sh "docker build -t ${env.DOCKER_REPOSITORY_NAME}:${env.DOCKER_IMAGE_NAME} ."
+          sh "docker build -t ${env.DOCKER_REPOSITORY_NAME}:${env.DOCKER_IMAGE_NAME} -t ${env.DOCKER_REPOSITORY_NAME}:latest ."
         }
       }
       stage('推送镜像') {
