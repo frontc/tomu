@@ -1,7 +1,6 @@
 package cn.lefer.tomu.controller;
 
 import cn.lefer.tomu.constant.SongSource;
-import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.service.ChannelService;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.PlayStatusView;
@@ -14,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.util.function.Tuples;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 

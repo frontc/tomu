@@ -10,6 +10,13 @@ public class PlayStatusView {
     int songID;
     int position;
 
+    public PlayStatusView(int songID, int position) {
+        this.songID = songID;
+        this.position = position;
+    }
+
+    public PlayStatusView() {
+    }
 
     public int getSongID() {
         return songID;

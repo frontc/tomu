@@ -11,12 +11,45 @@ import cn.lefer.tomu.entity.Song;
  */
 public class SongView {
     int songID;
-    String songURL;
+    String songUrl;
     SongSource songSource;
 
     public SongView(Song song) {
         this.songID = song.getSongID();
-        this.songURL = song.getSongURL();
+        this.songUrl = song.getSongUrl();
         this.songSource = song.getSongSource();
+    }
+
+    public int getSongID() {
+        return songID;
+    }
+
+    public void setSongID(int songID) {
+        this.songID = songID;
+    }
+
+    public String getSongUrl() {
+        return songUrl;
+    }
+
+    public void setSongUrl(String songUrl) {
+        this.songUrl = songUrl;
+    }
+
+    public SongSource getSongSource() {
+        return songSource;
+    }
+
+    public void setSongSource(SongSource songSource) {
+        this.songSource = songSource;
+    }
+
+    @Override
+    public String toString() {
+        return "SongView{" +
+                "songID=" + songID +
+                ", songUrl='" + songUrl + '\'' +
+                ", songSource=" + songSource +
+                '}';
     }
 }

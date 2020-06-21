@@ -12,7 +12,7 @@ public class Song {
     int songID;
     int channelID;
     String songName;
-    String songURL;
+    String songUrl;
     SongSource songSource;
     String songStatus;
     int songDuration;
@@ -41,12 +41,12 @@ public class Song {
         this.songName = songName;
     }
 
-    public String getSongURL() {
-        return songURL;
+    public String getSongUrl() {
+        return songUrl;
     }
 
-    public void setSongURL(String songURL) {
-        this.songURL = songURL;
+    public void setSongUrl(String songURL) {
+        this.songUrl = songURL;
     }
 
     public SongSource getSongSource() {
