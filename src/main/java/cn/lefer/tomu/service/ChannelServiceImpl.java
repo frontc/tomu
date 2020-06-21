@@ -2,6 +2,8 @@ package cn.lefer.tomu.service;
 
 import cn.lefer.tomu.entity.Channel;
 import cn.lefer.tomu.entity.Song;
+import cn.lefer.tomu.view.ChannelView;
+import cn.lefer.tomu.view.SongView;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,8 +23,8 @@ public class ChannelServiceImpl implements ChannelService{
     }
 
     @Override
-    public Channel getChannel(int channelID) {
-        return createChannel();
+    public ChannelView getChannel(int channelID) {
+        return new ChannelView(createChannel());
     }
 
     @Override
@@ -41,7 +43,14 @@ public class ChannelServiceImpl implements ChannelService{
     }
 
     @Override
-    public List<Song> getSongs(int channelID) {
-        return new ArrayList<>();
+    public List<SongView> getSongs(int channelID) {
+        List<SongView> songViews = new ArrayList<>();
+        songViews.add(new SongView(new Song()));
+        return songViews;
+    }
+
+    @Override
+    public boolean isChannelStatusChanged() {
+        return true;
     }
 }

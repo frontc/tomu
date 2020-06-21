@@ -1,6 +1,4 @@
-package cn.lefer.tomu.vo;
-
-import cn.lefer.tomu.entity.Channel;
+package cn.lefer.tomu.view;
 
 /**
  * @author : lefer
@@ -8,7 +6,7 @@ import cn.lefer.tomu.entity.Channel;
  * @date :   2020/6/17
  * @Description : 播放状态
  */
-public class PlayStatus {
+public class PlayStatusView {
     int songID;
     int position;
 
