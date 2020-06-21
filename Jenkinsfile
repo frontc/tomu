@@ -28,6 +28,9 @@ pipeline {
             docker.withRegistry("https://${DOCKER_REGISTRY_HOSTNAME}", "${env.DOCKER_REGISTRY_CREDENTIAL}") {
               docker.image("${env.DOCKER_REPOSITORY_NAME}:${env.DOCKER_IMAGE_NAME}").push()
             }
+            docker.withRegistry("https://${DOCKER_REGISTRY_HOSTNAME}", "${env.DOCKER_REGISTRY_CREDENTIAL}") {
+                          docker.image("${env.DOCKER_REPOSITORY_NAME}:latest").push()
+            }
           }
 
         }
