@@ -1,6 +1,5 @@
 package cn.lefer.tomu.exception;
 
-import cn.lefer.tomu.constant.BizError;
 import cn.lefer.tomu.constant.BizErrorCode;
 
 /**

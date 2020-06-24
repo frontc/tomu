@@ -1,7 +1,6 @@
 package cn.lefer.tomu.entity;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author : lefer

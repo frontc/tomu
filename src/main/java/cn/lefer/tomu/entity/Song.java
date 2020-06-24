@@ -111,4 +111,21 @@ public class Song {
     public void setSongStatus(String songStatus) {
         this.songStatus = songStatus;
     }
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "songID=" + songID +
+                ", channelID=" + channelID +
+                ", songName='" + songName + '\'' +
+                ", artistName='" + artistName + '\'' +
+                ", coverUrl='" + coverUrl + '\'' +
+                ", lrcUrl='" + lrcUrl + '\'' +
+                ", mp3Url='" + mp3Url + '\'' +
+                ", songDuration=" + songDuration +
+                ", songSource=" + songSource +
+                ", songUrl='" + songUrl + '\'' +
+                ", songStatus='" + songStatus + '\'' +
+                '}';
+    }
 }

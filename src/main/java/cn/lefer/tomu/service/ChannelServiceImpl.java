@@ -3,8 +3,10 @@ package cn.lefer.tomu.service;
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.entity.Channel;
 import cn.lefer.tomu.entity.Song;
+import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.SongView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -21,21 +23,13 @@ import java.util.List;
  */
 @Service
 public class ChannelServiceImpl implements ChannelService{
+    ChannelMapper channelMapper;
+
     @Override
     public Channel createChannel() {
-        Song song = new Song();
-        song.setChannelID(520);
-        song.setSongDuration(132);
-        song.setSongID(1234);
-        song.setSongName("Car Park");
-        song.setSongSource(SongSource.NETEASE);
-        song.setSongUrl("https://music.163.com/#/song?id=1307473639");
-
         Channel channel = new Channel();
-        channel.setChannelID(520);
         channel.setChannelCreateDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-        channel.setCurrentSong(song);
-        channel.setPosition(23);
+        channelMapper.insert(channel);
         return channel;
     }
 
@@ -69,5 +63,10 @@ public class ChannelServiceImpl implements ChannelService{
     @Override
     public boolean isChannelStatusChanged() {
         return true;
+    }
+
+    @Autowired
+    public void setChannelMapper(ChannelMapper channelMapper) {
+        this.channelMapper = channelMapper;
     }
 }
