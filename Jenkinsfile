@@ -14,7 +14,7 @@ pipeline {
       }
       stage('编译') {
         steps {
-          sh 'mvn package -Dmaven.test.skip=ture'
+          sh 'mvn package -Dmaven.test.skip=true'
         }
       }
       stage('构建镜像') {
