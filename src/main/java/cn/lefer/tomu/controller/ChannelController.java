@@ -31,6 +31,12 @@ public class ChannelController {
 
     ChannelService channelService;
 
+    //创建频道
+    @PostMapping(value ="/")
+    public ChannelView createChannel(){
+        return new ChannelView(channelService.createChannel());
+    }
+
     //获取频道信息
     @GetMapping(value = "/{channelID}")
     public ChannelView getChannel(@PathVariable("channelID") @Validated int channelID) {
