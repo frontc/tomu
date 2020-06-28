@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lefer.tomu.mapper.PlayHistoryMapper">
+    <resultMap id="PlayStatusMap" type="cn.lefer.tomu.entity.PlayHistory">
+        <id column="play_history_id" jdbcType="INTEGER" property="playHistoryID" />
+        <result column="channel_id" jdbcType="VARCHAR" property="channelID" />
+        <result column="song_id" jdbcType="INTEGER" property="songID" />
+        <result column="last_position" jdbcType="VARCHAR" property="lastPosition" />
+        <result column="play_date" jdbcType="DATE" property="playDate" />
+    </resultMap>
+
+    <insert id="insert" parameterType="cn.lefer.tomu.entity.PlayHistory" useGeneratedKeys="true" keyProperty="playHistoryID">
+        insert into T_PLAY_HISTORY(channel_id, song_id, last_position, play_date) values
+            (#{channelID},#{songID},#{lastPosition},#{playDate})
+    </insert>
+    <select id="selectPlayStatusByChannelID" resultMap="PlayStatusMap">
+        select * from T_PLAY_HISTORY where CHANNEL_ID=#{channelID} order by PLAY_HISTORY_ID desc limit 1
+    </select>
+</mapper>

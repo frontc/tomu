@@ -2,6 +2,7 @@ package cn.lefer.tomu.mapper;
 
 import cn.lefer.tomu.entity.Channel;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -14,4 +15,5 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface ChannelMapper {
     int insert(Channel channel);
+    Channel selectByID(@Param("channelID") int channelID);
 }

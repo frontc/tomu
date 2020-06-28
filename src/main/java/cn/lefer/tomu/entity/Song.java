@@ -1,6 +1,9 @@
 package cn.lefer.tomu.entity;
 
 import cn.lefer.tomu.constant.SongSource;
+import cn.lefer.tomu.constant.SongStatus;
+
+import java.util.Date;
 
 /**
  * @author : lefer
@@ -19,10 +22,8 @@ public class Song {
     int songDuration;//歌曲时长
     SongSource songSource;//歌曲来源平台
     String songUrl; //歌曲的来源地址
-    String songStatus;
-
-    public Song() {
-    }
+    SongStatus songStatus;
+    Date songAddDate;
 
     public int getSongID() {
         return songID;
@@ -104,12 +105,20 @@ public class Song {
         this.songUrl = songUrl;
     }
 
-    public String getSongStatus() {
+    public SongStatus getSongStatus() {
         return songStatus;
     }
 
-    public void setSongStatus(String songStatus) {
+    public void setSongStatus(SongStatus songStatus) {
         this.songStatus = songStatus;
+    }
+
+    public Date getSongAddDate() {
+        return songAddDate;
+    }
+
+    public void setSongAddDate(Date songAddDate) {
+        this.songAddDate = songAddDate;
     }
 
     @Override
@@ -126,6 +135,7 @@ public class Song {
                 ", songSource=" + songSource +
                 ", songUrl='" + songUrl + '\'' +
                 ", songStatus='" + songStatus + '\'' +
+                ", songAddDate=" + songAddDate +
                 '}';
     }
 }

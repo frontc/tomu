@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lefer.tomu.mapper.SongMapper">
+    <resultMap id="SongResultMap" type="cn.lefer.tomu.entity.Song">
+        <id column="song_id" jdbcType="INTEGER" property="songID"/>
+        <result column="song_name" jdbcType="VARCHAR" property="songName"/>
+        <result column="song_duration" jdbcType="INTEGER" property="songDuration"/>
+        <result column="artist_name" jdbcType="VARCHAR" property="artistName"/>
+        <result column="song_source" jdbcType="VARCHAR" property="songSource"/>
+        <result column="song_url" jdbcType="VARCHAR" property="songUrl"/>
+        <result column="mp3_url" jdbcType="VARCHAR" property="mp3Url"/>
+        <result column="cover_url" jdbcType="VARCHAR" property="coverUrl"/>
+        <result column="lrc_url" jdbcType="VARCHAR" property="lrcUrl"/>
+        <result column="song_status" jdbcType="VARCHAR" property="songStatus"/>
+        <result column="channel_id" jdbcType="INTEGER" property="channelID"/>
+        <result column="song_add_date" jdbcType="DATE" property="songAddDate"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="cn.lefer.tomu.entity.Song" useGeneratedKeys="true" keyProperty="songID">
+        insert into T_SONG(SONG_NAME, SONG_DURATION, ARTIST_NAME, SONG_SOURCE, SONG_URL, MP3_URL, COVER_URL, LRC_URL,
+                           SONG_STATUS, CHANNEL_ID, SONG_ADD_DATE)
+        values (#{songName}, #{songDuration}, #{artistName}, #{songSource}, #{songUrl}, #{mp3Url}, #{coverUrl},
+                #{lrcUrl}, #{songStatus}, #{channelID}, #{songAddDate})
+    </insert>
+    <select id="selectByID" resultMap="SongResultMap">
+        select *
+        from T_SONG
+        where SONG_ID = #{songID}
+    </select>
+    <select id="selectByChannelID" resultMap="SongResultMap">
+        select * from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
+            #{songStatus}
+        </foreach>
+    </select>
+</mapper>

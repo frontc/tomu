@@ -1,4 +1,4 @@
-package cn.lefer.tomu.constant;
+package cn.lefer.tomu.exception;
 
 /**
  * @author : lefer
@@ -7,5 +7,6 @@ package cn.lefer.tomu.constant;
  * @Description : 业务错误枚举
  */
 public enum BizErrorCode {
-    CHANNEL_IS_FULL;//3000
+    CHANNEL_IS_FULL,//3000
+    CHANNEL_NOT_EXISTS//3001
 }

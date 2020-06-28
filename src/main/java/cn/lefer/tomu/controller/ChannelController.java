@@ -1,6 +1,6 @@
 package cn.lefer.tomu.controller;
 
-import cn.lefer.tomu.constant.BizErrorCode;
+import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.exception.BizRestException;
 import cn.lefer.tomu.service.ChannelService;
@@ -26,32 +26,34 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @CrossOrigin
 @RestController
-@RequestMapping(value = "/api/v1/channel")
+@RequestMapping(value = "/api/v1")
 public class ChannelController {
 
     ChannelService channelService;
 
     //创建频道
-    @PostMapping(value ="/")
+    @PostMapping(value ="/channel")
     public ChannelView createChannel(){
         return new ChannelView(channelService.createChannel());
     }
 
     //获取频道信息
-    @GetMapping(value = "/{channelID}")
+    @GetMapping(value = "/channel/{channelID}")
     public ChannelView getChannel(@PathVariable("channelID") @Validated int channelID) {
         if (channelID == -1) throw new BizRestException(BizErrorCode.CHANNEL_IS_FULL);
-        return channelService.getChannel(channelID);
+        ChannelView channelView = channelService.getChannel(channelID);
+        if(channelView==null) throw new BizRestException(BizErrorCode.CHANNEL_NOT_EXISTS);
+        return channelView;
     }
 
     //获取频道下的歌单
-    @GetMapping(value = "/{channelID}/songs")
+    @GetMapping(value = "/channel/{channelID}/songs")
     public List<SongView> getSongs(@PathVariable("channelID") @Validated int channelID) {
         return channelService.getSongs(channelID);
     }
 
-    //添加歌曲
-    @PostMapping(value = "/{channelID}/song")
+    //TODO:添加歌曲
+    @PostMapping(value = "/channel/{channelID}/song")
     public List<SongView> addSong(@PathVariable("channelID") @Validated int channelID,
                                   @RequestParam @Validated SongSource songSource,
                                   @RequestParam @Validated String songUrl,
@@ -64,14 +66,14 @@ public class ChannelController {
         return channelService.getSongs(channelID);
     }
 
-    //接收频道状态
-    @PostMapping(value = "/{channelID}/status")
+    //TODO:接收频道状态
+    @PostMapping(value = "/channel/{channelID}/status")
     public boolean changeChannelStatus(@PathVariable("channelID") @Validated int channelID, int songID, int position) {
         return true;
     }
 
-    //推送频道状态
-    @GetMapping(value = "/{channelID}/status")
+    //TODO:推送频道状态
+    @GetMapping(value = "/channel/{channelID}/status")
     public Flux<ServerSentEvent<PlayStatusView>> getStatus(@PathVariable("channelID") @Validated int channelID) {
         return Flux.interval(Duration.ofSeconds(1))
                 .filter(l -> channelService.isChannelStatusChanged())

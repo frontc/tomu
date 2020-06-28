@@ -12,6 +12,7 @@ public class PlayHistory {
     int playHistoryID;
     int channelID;
     int songID;
+    int lastPosition;
     Date playDate;
 
     public int getPlayHistoryID() {
@@ -38,6 +39,14 @@ public class PlayHistory {
         this.songID = songID;
     }
 
+    public int getLastPosition() {
+        return lastPosition;
+    }
+
+    public void setLastPosition(int lastPosition) {
+        this.lastPosition = lastPosition;
+    }
+
     public Date getPlayDate() {
         return playDate;
     }
@@ -52,6 +61,7 @@ public class PlayHistory {
                 "playHistoryID=" + playHistoryID +
                 ", channelID=" + channelID +
                 ", songID=" + songID +
+                ", lastPosition=" + lastPosition +
                 ", playDate=" + playDate +
                 '}';
     }

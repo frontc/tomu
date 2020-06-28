@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.sql.Date;
+import java.util.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -28,5 +28,11 @@ public class ChannelMapperTests {
         channel.setChannelCreateDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         channelMapper.insert(channel);
         Assertions.assertTrue(channel.getChannelID()>0);
+    }
+    @Test
+    public void testSelectByID(){
+        Channel channel = channelMapper.selectByID(1);
+        System.out.println(channel);
+        Assertions.assertNotNull(channel);
     }
 }

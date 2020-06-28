@@ -1,9 +1,12 @@
 package cn.lefer.tomu.service;
 
-import cn.lefer.tomu.constant.SongSource;
+import cn.lefer.tomu.constant.SongStatus;
 import cn.lefer.tomu.entity.Channel;
+import cn.lefer.tomu.entity.PlayHistory;
 import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.mapper.ChannelMapper;
+import cn.lefer.tomu.mapper.PlayHistoryMapper;
+import cn.lefer.tomu.mapper.SongMapper;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.SongView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author : lefer
@@ -24,6 +28,8 @@ import java.util.List;
 @Service
 public class ChannelServiceImpl implements ChannelService{
     ChannelMapper channelMapper;
+    PlayHistoryMapper playHistoryMapper;
+    SongMapper songMapper;
 
     @Override
     public Channel createChannel() {
@@ -35,7 +41,15 @@ public class ChannelServiceImpl implements ChannelService{
 
     @Override
     public ChannelView getChannel(int channelID) {
-        return new ChannelView(createChannel());
+        Channel channel = channelMapper.selectByID(channelID);
+        if(channel==null) return null;
+        PlayHistory playHistory = playHistoryMapper.selectPlayStatusByChannelID(channelID);
+        if(playHistory!=null){
+            Song song = songMapper.selectByID(playHistory.getSongID());
+            channel.setCurrentSong(song);
+            channel.setPosition(playHistory.getLastPosition());
+        }
+        return new ChannelView(channel);
     }
 
     @Override
@@ -55,9 +69,11 @@ public class ChannelServiceImpl implements ChannelService{
 
     @Override
     public List<SongView> getSongs(int channelID) {
-        List<SongView> songViews = new ArrayList<>();
-        songViews.add(new SongView(new Song()));
-        return songViews;
+        List<SongStatus> songStatusList = new ArrayList<>();
+        songStatusList.add(SongStatus.NORMAL);
+        songStatusList.add(SongStatus.OUTDATE);
+        List<Song> songs = songMapper.selectByChannelID(channelID,songStatusList);
+        return songs.stream().map(SongView::new).collect(Collectors.toList());
     }
 
     @Override
@@ -68,5 +84,15 @@ public class ChannelServiceImpl implements ChannelService{
     @Autowired
     public void setChannelMapper(ChannelMapper channelMapper) {
         this.channelMapper = channelMapper;
+    }
+
+    @Autowired
+    public void setPlayHistoryMapper(PlayHistoryMapper playHistoryMapper) {
+        this.playHistoryMapper = playHistoryMapper;
+    }
+
+    @Autowired
+    public void setSongMapper(SongMapper songMapper) {
+        this.songMapper = songMapper;
     }
 }

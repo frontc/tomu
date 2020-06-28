@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.lefer</groupId>
     <artifactId>tomu</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
     <name>tomu</name>
     <description>Listening to music together</description>
 
@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>cn.lefer</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
