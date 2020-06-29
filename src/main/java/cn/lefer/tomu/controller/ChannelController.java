@@ -34,7 +34,7 @@ public class ChannelController {
     //创建频道
     @PostMapping(value ="/channel")
     public ChannelView createChannel(){
-        return new ChannelView(channelService.createChannel());
+        return channelService.createChannel();
     }
 
     //获取频道信息

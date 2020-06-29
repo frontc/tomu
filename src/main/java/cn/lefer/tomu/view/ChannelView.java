@@ -12,7 +12,7 @@ import java.util.Date;
  */
 public class ChannelView {
     int channelID;
-    int channelName;
+    String channelName;
     Date channelCreateDate;
     PlayStatusView playStatus;
 
@@ -20,7 +20,9 @@ public class ChannelView {
         this.channelID = channel.getChannelID();
         this.channelName = channel.getChannelName();
         this.channelCreateDate = channel.getChannelCreateDate();
-        this.playStatus= new PlayStatusView(channel.getCurrentSong().getSongID(),channel.getPosition());
+        if(channel.getCurrentSong()!=null){
+            this.playStatus= new PlayStatusView(channel.getCurrentSong().getSongID(),channel.getPosition());
+        }
     }
 
     public int getChannelID() {
@@ -31,11 +33,11 @@ public class ChannelView {
         this.channelID = channelID;
     }
 
-    public int getChannelName() {
+    public String getChannelName() {
         return channelName;
     }
 
-    public void setChannelName(int channelName) {
+    public void setChannelName(String channelName) {
         this.channelName = channelName;
     }
 

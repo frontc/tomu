@@ -9,6 +9,7 @@ import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.SongView;
+import cn.lefer.tools.Date.LeferDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +33,11 @@ public class ChannelServiceImpl implements ChannelService{
     SongMapper songMapper;
 
     @Override
-    public Channel createChannel() {
+    public ChannelView createChannel() {
         Channel channel = new Channel();
-        channel.setChannelCreateDate(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        channel.setChannelCreateDate(LeferDate.today());
         channelMapper.insert(channel);
-        return channel;
+        return new ChannelView(channel);
     }
 
     @Override

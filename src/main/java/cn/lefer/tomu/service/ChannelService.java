@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface ChannelService {
     //创建一个频道
-    Channel createChannel();
+    ChannelView createChannel();
     //根据channelID获取一个频道
     ChannelView getChannel(int channelID);
     //增加歌曲

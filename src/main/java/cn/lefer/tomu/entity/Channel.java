@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class Channel {
     int channelID;
-    int channelName;
+    String channelName;
     int channelOwnerID;
     String channelKey;
     Date channelCreateDate;
@@ -25,11 +25,11 @@ public class Channel {
         this.channelID = channelID;
     }
 
-    public int getChannelName() {
+    public String getChannelName() {
         return channelName;
     }
 
-    public void setChannelName(int channelName) {
+    public void setChannelName(String channelName) {
         this.channelName = channelName;
     }
 
