@@ -28,7 +28,7 @@ public class SongMapperTests {
     public void testInsert(){
         Song song = new Song();
         song.setSongUrl("https://music.163.com/#/song?id=1307473639");
-        song.setSongSource(SongSource.NETEASE);
+        song.setSongSource(SongSource.netease);
         song.setSongName("Car Park");
         song.setSongDuration(180);
         song.setChannelID(1);

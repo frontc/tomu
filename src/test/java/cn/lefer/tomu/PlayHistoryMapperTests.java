@@ -36,5 +36,4 @@ public class PlayHistoryMapperTests {
         System.out.println(playHistory);
         Assertions.assertNotNull(playHistory);
     }
-
 }

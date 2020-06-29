@@ -7,10 +7,10 @@ package cn.lefer.tomu.constant;
  * @Description : 歌曲来源
  */
 public enum SongSource {
-    NETEASE,/*网易云音乐*/
-    TENCENT,/*QQ音乐*/
-    KUGOU,/*酷狗音乐*/
-    XIAMI,/*虾米音乐*/
-    BAIDU,/*百度音乐*/
-    DIRECT;/*直接*/
+    netease,/*网易云音乐*/
+    tencent,/*QQ音乐*/
+    kugou,/*酷狗音乐*/
+    xiami,/*虾米音乐*/
+    baidu,/*百度音乐*/
+    direct;/*直接*/
 }
