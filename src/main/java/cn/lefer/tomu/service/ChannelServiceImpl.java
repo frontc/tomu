@@ -1,5 +1,6 @@
 package cn.lefer.tomu.service;
 
+import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.constant.SongStatus;
 import cn.lefer.tomu.entity.Channel;
 import cn.lefer.tomu.entity.PlayHistory;
@@ -13,10 +14,10 @@ import cn.lefer.tools.Date.LeferDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,8 +55,29 @@ public class ChannelServiceImpl implements ChannelService{
     }
 
     @Override
-    public Channel addSong(Song song) {
-        return null;
+    public SongView addSong(int channelID,
+                           String songName,
+                           String artistName,
+                           String coverUrl,
+                           String lrcUrl,
+                           String mp3Url,
+                           int songDuration,
+                           SongSource songSource,
+                           String songUrl) {
+        Song song = new Song();
+        song.setSongAddDate(LeferDate.today());
+        song.setMp3Url(mp3Url);
+        song.setLrcUrl(lrcUrl);
+        song.setCoverUrl(coverUrl);
+        song.setArtistName(artistName);
+        song.setChannelID(channelID);
+        song.setSongDuration(songDuration);
+        song.setSongName(songName);
+        song.setSongSource(songSource);
+        song.setSongUrl(songUrl);
+        song.setSongStatus(SongStatus.NORMAL);
+        songMapper.insert(song);
+        return new SongView(song);
     }
 
     @Override

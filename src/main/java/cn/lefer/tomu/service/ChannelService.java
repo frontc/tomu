@@ -1,5 +1,6 @@
 package cn.lefer.tomu.service;
 
+import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.entity.Channel;
 import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.view.ChannelView;
@@ -19,7 +20,15 @@ public interface ChannelService {
     //根据channelID获取一个频道
     ChannelView getChannel(int channelID);
     //增加歌曲
-    Channel addSong(Song song);
+    SongView addSong(int channelID,
+                    String songName,
+                    String artistName,
+                    String coverUrl,
+                    String lrcUrl,
+                    String mp3Url,
+                    int songDuration,
+                    SongSource songSource,
+                    String songUrl);
     //删除歌曲
     Channel deleteSong(int channelID,int songID);
     //播放歌曲

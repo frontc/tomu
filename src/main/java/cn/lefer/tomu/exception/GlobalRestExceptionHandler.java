@@ -21,6 +21,11 @@ public class GlobalRestExceptionHandler {
 
     @ExceptionHandler({BizRestException.class})
     protected ResponseEntity<Object> bizRestExceptionHandle(BizRestException ex){
-        return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.BAD_REQUEST);
+        switch (ex.bizErrorCode){
+            case NO_TOKEN:
+                return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.FORBIDDEN);
+            default:
+                return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.BAD_REQUEST);
+        }
     }
 }

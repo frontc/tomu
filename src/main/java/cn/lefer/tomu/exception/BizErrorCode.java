@@ -7,6 +7,8 @@ package cn.lefer.tomu.exception;
  * @Description : 业务错误枚举
  */
 public enum BizErrorCode {
-    CHANNEL_IS_FULL,//3000
-    CHANNEL_NOT_EXISTS//3001
+    CHANNEL_IS_FULL,//4000
+    CHANNEL_NOT_EXISTS,//4001
+    NO_TOKEN,//4030
+    INVALID_TOKEN,//4031
 }

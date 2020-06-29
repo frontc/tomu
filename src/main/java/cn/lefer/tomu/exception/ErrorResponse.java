@@ -34,7 +34,8 @@ public class ErrorResponse {
     public void setMessage(String message) {
         this.message = message;
     }
-    public static final class ErrorResponseBuilder{
+
+    public static final class ErrorResponseBuilder {
         String code;
         String type;
         String message;
@@ -68,6 +69,22 @@ public class ErrorResponse {
             errorResponse.message = this.message;
             return errorResponse;
         }
+    }
 
+    @Override
+    public String toString() {
+        return "ErrorResponse{" +
+                "code='" + code + '\'' +
+                ", type='" + type + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
+
+    public String toJson() {
+        return "{" +
+                "\"code\": \"" + code + "\"," +
+                "\"type\": \"" + type + "\"," +
+                "\"message\": \"" + message + "\"" +
+                " }";
     }
 }

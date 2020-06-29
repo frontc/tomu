@@ -12,14 +12,24 @@ import java.util.Map;
 public class BizError {
     private final static Map<BizErrorCode, ErrorResponse> bizError = new HashMap<BizErrorCode, ErrorResponse>(){{
         put(BizErrorCode.CHANNEL_IS_FULL,new ErrorResponse.ErrorResponseBuilder()
-                .withCode("3000")
+                .withCode("4000")
                 .withType("ERROR")
                 .withMessage("频道已满")
                 .build());
         put(BizErrorCode.CHANNEL_NOT_EXISTS,new ErrorResponse.ErrorResponseBuilder()
-                .withCode("3001")
+                .withCode("4001")
                 .withType("ERROR")
                 .withMessage("频道不存在")
+                .build());
+        put(BizErrorCode.NO_TOKEN,new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4030")
+                .withType("ERROR")
+                .withMessage("未携带token")
+                .build());
+        put(BizErrorCode.INVALID_TOKEN,new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4031")
+                .withType("ERROR")
+                .withMessage("token无效")
                 .build());
     }};
 
