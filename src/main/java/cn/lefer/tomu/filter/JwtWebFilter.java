@@ -4,6 +4,7 @@ import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.exception.BizError;
 import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.exception.BizRestException;
+import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tools.Token.LeferJwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,13 +34,12 @@ public class JwtWebFilter implements WebFilter {
         ServerHttpRequest request = serverWebExchange.getRequest();
         String path = request.getPath().value();
         if (path.contains("channel")) {
-            String authorization = request.getHeaders().getFirst("Authorization");
+            String token = TomuUtils.getToken(serverWebExchange);
             //1.如果没有token
-            if (authorization == null || !authorization.startsWith("Bearer ")) {
+            if (token==null) {
                 return fail(serverWebExchange, HttpStatus.FORBIDDEN, BizErrorCode.NO_TOKEN);
             }
             //2.如果token无效
-            String token = authorization.substring(6);
             if (!LeferJwt.isValid(token, tokenKey)) {
                 return fail(serverWebExchange, HttpStatus.FORBIDDEN, BizErrorCode.INVALID_TOKEN);
             }

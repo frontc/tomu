@@ -1,8 +1,8 @@
 package cn.lefer.tomu.controller;
 
+import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tools.Token.LeferJwt;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,5 +37,11 @@ public class BaseController {
                 hostString!=null?hostString:"",
                 tokenKey,
                 ttMillis);
+    }
+
+    @GetMapping(value = "/who")
+    public String who(ServerWebExchange exchange){
+        String token= TomuUtils.getToken(exchange);
+        return token==null?"anonymous":TomuUtils.getNickname(token);
     }
 }

@@ -2,8 +2,8 @@ package cn.lefer.tomu.service;
 
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.entity.Channel;
-import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.view.ChannelView;
+import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 
 import java.util.List;
@@ -36,5 +36,7 @@ public interface ChannelService {
     //获得歌单
     List<SongView> getSongs(int channelID);
     //歌单的状态是否发生变化
-    boolean isChannelStatusChanged();
+    boolean isChannelStatusChanged(int channelID,String token);
+    PlayStatusView getNewPlayStatus(int channelID, String token);
+    boolean changeChannelStatus(int channelID,int songID,int position,String token);
 }

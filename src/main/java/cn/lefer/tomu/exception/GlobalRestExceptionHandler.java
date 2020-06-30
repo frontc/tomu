@@ -24,6 +24,8 @@ public class GlobalRestExceptionHandler {
         switch (ex.bizErrorCode){
             case NO_TOKEN:
                 return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.FORBIDDEN);
+            case PERSISTENCE_FAILED:
+                return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.INTERNAL_SERVER_ERROR);
             default:
                 return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.BAD_REQUEST);
         }

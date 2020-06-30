@@ -11,4 +11,5 @@ public enum BizErrorCode {
     CHANNEL_NOT_EXISTS,//4001
     NO_TOKEN,//4030
     INVALID_TOKEN,//4031
-}
+    PERSISTENCE_FAILED,//5000
+    }

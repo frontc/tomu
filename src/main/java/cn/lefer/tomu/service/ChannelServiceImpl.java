@@ -1,5 +1,6 @@
 package cn.lefer.tomu.service;
 
+import cn.lefer.tomu.cache.ChannelStatus;
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.constant.SongStatus;
 import cn.lefer.tomu.entity.Channel;
@@ -9,15 +10,13 @@ import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
 import cn.lefer.tomu.view.ChannelView;
+import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 import cn.lefer.tools.Date.LeferDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +31,7 @@ public class ChannelServiceImpl implements ChannelService{
     ChannelMapper channelMapper;
     PlayHistoryMapper playHistoryMapper;
     SongMapper songMapper;
+    ChannelStatus channelStatus;
 
     @Override
     public ChannelView createChannel() {
@@ -100,8 +100,22 @@ public class ChannelServiceImpl implements ChannelService{
     }
 
     @Override
-    public boolean isChannelStatusChanged() {
-        return true;
+    public boolean isChannelStatusChanged(int channelID,String token) {
+        return channelStatus.isChanged(channelID,token);
+    }
+
+    @Override
+    public PlayStatusView getNewPlayStatus(int channelID,String token){
+        PlayStatusView playStatusView = new PlayStatusView();
+        playStatusView.setSongID(channelStatus.getLastSongID(channelID));
+        playStatusView.setPosition(channelStatus.getLastPosition(channelID));
+        channelStatus.fire(channelID,token);
+        return playStatusView;
+    }
+
+    @Override
+    public boolean changeChannelStatus(int channelID, int songID, int position, String token) {
+        return channelStatus.changeChannelStatus(channelID,songID,position,token);
     }
 
     @Autowired
@@ -112,6 +126,11 @@ public class ChannelServiceImpl implements ChannelService{
     @Autowired
     public void setPlayHistoryMapper(PlayHistoryMapper playHistoryMapper) {
         this.playHistoryMapper = playHistoryMapper;
+    }
+
+    @Autowired
+    public void setChannelStatus(ChannelStatus channelStatus) {
+        this.channelStatus = channelStatus;
     }
 
     @Autowired

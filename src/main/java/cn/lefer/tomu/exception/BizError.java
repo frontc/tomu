@@ -31,6 +31,11 @@ public class BizError {
                 .withType("ERROR")
                 .withMessage("token无效")
                 .build());
+        put(BizErrorCode.PERSISTENCE_FAILED,new ErrorResponse.ErrorResponseBuilder()
+                .withCode("5000")
+                .withType("ERROR")
+                .withMessage("服务器内部错误")
+                .build());
     }};
 
     public static ErrorResponse generate(BizErrorCode bizErrorCode){

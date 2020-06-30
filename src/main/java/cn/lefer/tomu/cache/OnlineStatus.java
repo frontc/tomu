@@ -2,12 +2,16 @@ package cn.lefer.tomu.cache;
 
 import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.exception.BizRestException;
+import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tools.Date.LeferDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author : lefer
@@ -29,12 +33,12 @@ public class OnlineStatus {
      * 3.3如果本次用户标识符在记录时发现该频道已经有两个额外的标识符存在，踢出10分钟之内无活跃动作的标识符。
      * 3.4如果都在10分钟内有活跃，报频道已满，可由现在在线的用户手动踢掉一个
      * */
-    HashMap<Integer, HashMap<String, Date>> channelStatusMap;//频道里的访客
-    HashMap<String, ChannelPlus> userStatusMap;//访客对应的频道，一个访客只能属于一个频道
+    ConcurrentHashMap<Integer, HashMap<String, Date>> channelStatusMap;//频道里的访客
+    ConcurrentHashMap<String, ChannelPlus> userStatusMap;//访客对应的频道，一个访客只能属于一个频道
 
     public OnlineStatus() {
-        channelStatusMap = new HashMap<>();
-        userStatusMap = new HashMap<>();
+        channelStatusMap = new ConcurrentHashMap<>();
+        userStatusMap = new ConcurrentHashMap<>();
     }
 
     public void updateOnlineStatus(String token, int channelID) {
@@ -55,14 +59,15 @@ public class OnlineStatus {
             //频道有空余座位或该用户本来就在频道内，则直接添加
             if (channelStatusMap.get(channelID).size() < channelSize || channelStatusMap.get(channelID).containsKey(token)) {
                 channelStatusMap.get(channelID).put(token, date);
-            }
-            //频道没有空余座位，则开始踢人
-            channelStatusMap.get(channelID).forEach((k, v) -> clearChannelStatusMap(channelID, k, v));
-            //踢出空座位，则更新
-            if (channelStatusMap.get(channelID).size() < channelSize) {
-                channelStatusMap.get(channelID).put(token, date);
-            } else {//还是无座，报座位已满
-                throw new BizRestException(BizErrorCode.CHANNEL_IS_FULL);
+            }else{
+                //频道没有空余座位，则开始踢人
+                channelStatusMap.get(channelID).forEach((k, v) -> clearChannelStatusMap(channelID, k, v));
+                //踢出空座位，则更新
+                if (channelStatusMap.get(channelID).size() < channelSize) {
+                    channelStatusMap.get(channelID).put(token, date);
+                } else {//还是无座，报座位已满
+                    throw new BizRestException(BizErrorCode.CHANNEL_IS_FULL);
+                }
             }
         } else {//如果频道在缓存中不存在，直接新增
             HashMap<String, Date> tokenDateMap = new HashMap<>();
@@ -86,6 +91,10 @@ public class OnlineStatus {
         if (v.before(dateBefore)) {
             channelStatusMap.get(channelID).remove(k);
         }
+    }
+
+    public List<String> getAudience(int channelID){
+         return channelStatusMap.get(channelID).keySet().stream().map(TomuUtils::getNickname).collect(Collectors.toList());
     }
 
     private class ChannelPlus {
