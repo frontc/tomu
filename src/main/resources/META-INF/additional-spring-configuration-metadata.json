@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "tomu.version",
+      "type": "java.lang.String",
+      "description": "tomu version."
+    },
+    {
+      "name": "token.key",
+      "type": "java.lang.String",
+      "description": "the key to generate token."
+    },
+    {
+      "name": "token.ttMillis",
+      "type": "java.lang.Long",
+      "description": "the millis for token to keep alive."
+    },
+    {
+      "name": "channel.size",
+      "type": "java.lang.Integer",
+      "description": "频道能容纳的最大人数."
+    },
+    {
+      "name": "idle.time",
+      "type": "java.lang.Long",
+      "description": "用户加入频道后允许的最大空置时间."
+    }
+  ]
+}

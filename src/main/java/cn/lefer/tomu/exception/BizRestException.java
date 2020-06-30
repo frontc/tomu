@@ -13,4 +13,12 @@ public class BizRestException extends RuntimeException{
     public BizRestException(BizErrorCode bizErrorCode) {
         this.bizErrorCode=bizErrorCode;
     }
+
+    public BizErrorCode getBizErrorCode() {
+        return bizErrorCode;
+    }
+
+    public void setBizErrorCode(BizErrorCode bizErrorCode) {
+        this.bizErrorCode = bizErrorCode;
+    }
 }
