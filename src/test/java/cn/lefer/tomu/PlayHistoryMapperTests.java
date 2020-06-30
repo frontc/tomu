@@ -36,4 +36,9 @@ public class PlayHistoryMapperTests {
         System.out.println(playHistory);
         Assertions.assertNotNull(playHistory);
     }
+
+    @Test
+    public void testUpdateStatus(){
+        playHistoryMapper.updateStatus(1,LeferDate.today(),1);
+    }
 }

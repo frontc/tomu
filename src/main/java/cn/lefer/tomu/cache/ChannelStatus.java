@@ -39,9 +39,7 @@ public class ChannelStatus {
         try{
             Date now = LeferDate.today();
             PlayHistory lastPlayHistory = playHistoryMapper.selectPlayStatusByChannelID(channelID);
-            if(lastPlayHistory.getSongID()==songID){
-                playHistoryMapper.updateStatus(position,now ,lastPlayHistory.getPlayHistoryID());
-            }else{
+            if(lastPlayHistory==null||lastPlayHistory.getSongID()!=songID){
                 //如果当前频道的最新一条播放记录不是这首歌，那么插入一条新的播放记录
                 PlayHistory playHistory = new PlayHistory();
                 playHistory.setSongID(songID);
@@ -49,6 +47,8 @@ public class ChannelStatus {
                 playHistory.setLastPosition(position);
                 playHistory.setPlayDate(now);
                 playHistoryMapper.insert(playHistory);
+            }else{
+                playHistoryMapper.updateStatus(position,now ,lastPlayHistory.getPlayHistoryID());
             }
             //写入缓存
             PlayStatus playStatus = new PlayStatus();
@@ -58,6 +58,7 @@ public class ChannelStatus {
             Set<String> users = new HashSet<>();
             users.add(token);
             playStatus.setBroadcast(users);
+            channelStatusMap.put(channelID,playStatus);
         }catch (Exception ex){
             throw new BizRestException(BizErrorCode.PERSISTENCE_FAILED);
         }
