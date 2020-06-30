@@ -27,7 +27,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * @date :   2020/6/16
  * @Description : 频道API
  */
-@CrossOrigin(allowCredentials = "true")
 @RestController
 @RequestMapping(value = "/api/v1/channel")
 public class ChannelController {

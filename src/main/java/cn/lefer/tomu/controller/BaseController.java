@@ -14,7 +14,6 @@ import org.springframework.web.server.ServerWebExchange;
  * @date :   2020/6/22
  * @Description : 基础控制器
  */
-@CrossOrigin
 @RestController
 @RequestMapping(value = "/api/v1")
 public class BaseController {
