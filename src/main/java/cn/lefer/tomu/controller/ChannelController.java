@@ -83,14 +83,15 @@ public class ChannelController {
 
     @GetMapping(value = "/{channelID}/status")
     public Flux<ServerSentEvent<PlayStatusView>> getStatus(@PathVariable("channelID") @Validated int channelID,
+                                                           @RequestParam @Validated String clientID,
                                                            ServerWebExchange exchange) {
         return Flux.interval(Duration.ofSeconds(1))
-                .filter(l -> channelService.isChannelStatusChanged(channelID,TomuUtils.getToken(exchange)))
+                .filter(l -> channelService.isChannelStatusChanged(channelID,clientID))
                 .map(seq -> Tuples.of(seq, ThreadLocalRandom.current().nextInt()))
                 .map(data -> (ServerSentEvent.<PlayStatusView>builder()
                         .event("status")
                         .id(Long.toString(data.getT1()))
-                        .data(channelService.getNewPlayStatus(channelID,TomuUtils.getToken(exchange)))
+                        .data(channelService.getNewPlayStatus(channelID,clientID))
                         .build()));
     }
 

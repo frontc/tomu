@@ -9,6 +9,7 @@ import cn.lefer.tools.Token.LeferJwt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -33,6 +34,9 @@ public class JwtWebFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
         ServerHttpRequest request = serverWebExchange.getRequest();
         String path = request.getPath().value();
+        if(HttpMethod.GET.equals(request.getMethod()) && path.contains("status")){
+            return webFilterChain.filter(serverWebExchange);
+        }
         if (path.contains("channel")) {
             String token = TomuUtils.getToken(serverWebExchange);
             //1.如果没有token
