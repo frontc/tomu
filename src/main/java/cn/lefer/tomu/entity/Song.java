@@ -19,7 +19,7 @@ public class Song {
     String coverUrl;//封面URL
     String lrcUrl;//歌词URL
     String mp3Url; //mp3文件的地址
-    int songDuration;//歌曲时长
+    double songDuration;//歌曲时长
     SongSource songSource;//歌曲来源平台
     String songUrl; //歌曲的来源地址
     SongStatus songStatus;
@@ -81,11 +81,11 @@ public class Song {
         this.mp3Url = mp3Url;
     }
 
-    public int getSongDuration() {
+    public double getSongDuration() {
         return songDuration;
     }
 
-    public void setSongDuration(int songDuration) {
+    public void setSongDuration(double songDuration) {
         this.songDuration = songDuration;
     }
 

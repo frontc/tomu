@@ -14,7 +14,7 @@ create table t_song
 (
     song_id bigint IDENTITY primary key ,
     song_name varchar(200),
-    song_duration int,
+    song_duration decimal,
     artist_name varchar(50),
     song_source varchar(20),
     song_url varchar(255),
@@ -34,7 +34,7 @@ create table t_play_history
     play_history_id bigint IDENTITY primary key,
     channel_id int,
     song_id bigint,
-    last_position int,
+    last_position decimal,
     play_date datetime
 );
 

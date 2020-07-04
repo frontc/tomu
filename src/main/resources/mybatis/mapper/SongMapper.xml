@@ -4,7 +4,7 @@
     <resultMap id="SongResultMap" type="cn.lefer.tomu.entity.Song">
         <id column="song_id" jdbcType="INTEGER" property="songID"/>
         <result column="song_name" jdbcType="VARCHAR" property="songName"/>
-        <result column="song_duration" jdbcType="INTEGER" property="songDuration"/>
+        <result column="song_duration" jdbcType="DOUBLE" property="songDuration"/>
         <result column="artist_name" jdbcType="VARCHAR" property="artistName"/>
         <result column="song_source" jdbcType="VARCHAR" property="songSource"/>
         <result column="song_url" jdbcType="VARCHAR" property="songUrl"/>

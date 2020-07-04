@@ -5,7 +5,7 @@
         <id column="play_history_id" jdbcType="INTEGER" property="playHistoryID"/>
         <result column="channel_id" jdbcType="VARCHAR" property="channelID"/>
         <result column="song_id" jdbcType="INTEGER" property="songID"/>
-        <result column="last_position" jdbcType="VARCHAR" property="lastPosition"/>
+        <result column="last_position" jdbcType="DOUBLE" property="lastPosition"/>
         <result column="play_date" jdbcType="DATE" property="playDate"/>
     </resultMap>
 

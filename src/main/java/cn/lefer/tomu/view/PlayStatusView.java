@@ -8,9 +8,9 @@ package cn.lefer.tomu.view;
  */
 public class PlayStatusView {
     int songID;
-    int position;
+    double position;
 
-    public PlayStatusView(int songID, int position) {
+    public PlayStatusView(int songID, double position) {
         this.songID = songID;
         this.position = position;
     }
@@ -26,11 +26,11 @@ public class PlayStatusView {
         this.songID = songID;
     }
 
-    public int getPosition() {
+    public double getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(double position) {
         this.position = position;
     }
 

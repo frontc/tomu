@@ -37,7 +37,7 @@ public class ChannelStatus {
     /*
      * 接收到change请求后，首先修改数据库的playHistory，然后修改缓存
      * */
-    public boolean changeChannelStatus(int channelID, int songID, int position, String token) {
+    public boolean changeChannelStatus(int channelID, int songID, double position, String token) {
         //如果当前频道的最新一条播放记录即为同一首歌，那么就更新位置和时间
         log.debug("状态上报前" + channelStatusMap);
         try {
@@ -73,7 +73,7 @@ public class ChannelStatus {
         return channelStatusMap.get(channelID).getSongID();
     }
 
-    public int getLastPosition(int channelID) {
+    public double getLastPosition(int channelID) {
         return channelStatusMap.get(channelID).getPosition();
     }
 
@@ -87,7 +87,7 @@ public class ChannelStatus {
 
     private class PlayStatus {
         int songID;
-        int position;
+        double position;
         Date changeDate;
         Set<String> broadcast;
 
@@ -99,11 +99,11 @@ public class ChannelStatus {
             this.songID = songID;
         }
 
-        public int getPosition() {
+        public double getPosition() {
             return position;
         }
 
-        public void setPosition(int position) {
+        public void setPosition(double position) {
             this.position = position;
         }
 

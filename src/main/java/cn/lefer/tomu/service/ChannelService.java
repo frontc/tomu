@@ -25,7 +25,7 @@ public interface ChannelService {
                     String coverUrl,
                     String lrcUrl,
                     String mp3Url,
-                    int songDuration,
+                     double songDuration,
                     SongSource songSource,
                     String songUrl);
     //删除歌曲
@@ -38,5 +38,5 @@ public interface ChannelService {
     //歌单的状态是否发生变化
     boolean isChannelStatusChanged(int channelID,String token);
     PlayStatusView getNewPlayStatus(int channelID, String token);
-    boolean changeChannelStatus(int channelID,int songID,int position,String token);
+    boolean changeChannelStatus(int channelID,int songID,double position,String token);
 }

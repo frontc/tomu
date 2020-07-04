@@ -15,7 +15,7 @@ public class Channel {
     String channelKey;
     Date channelCreateDate;
     Song currentSong;
-    int position;
+    double position;
 
     public int getChannelID() {
         return channelID;
@@ -65,11 +65,11 @@ public class Channel {
         this.currentSong = currentSong;
     }
 
-    public int getPosition() {
+    public double getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(double position) {
         this.position = position;
     }
 

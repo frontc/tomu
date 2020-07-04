@@ -62,7 +62,7 @@ public class ChannelServiceImpl implements ChannelService{
                            String coverUrl,
                            String lrcUrl,
                            String mp3Url,
-                           int songDuration,
+                            double songDuration,
                            SongSource songSource,
                            String songUrl) {
         Song song = new Song();
@@ -119,7 +119,7 @@ public class ChannelServiceImpl implements ChannelService{
     }
 
     @Override
-    public boolean changeChannelStatus(int channelID, int songID, int position, String token) {
+    public boolean changeChannelStatus(int channelID, int songID, double position, String token) {
         return channelStatus.changeChannelStatus(channelID,songID,position,token);
     }
 

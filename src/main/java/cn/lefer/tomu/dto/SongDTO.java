@@ -16,7 +16,7 @@ public class SongDTO {
     String lrcUrl;
     String artistName;
     String songName;
-    int songDuration;
+    double songDuration;
 
     public SongSource getSongSource() {
         return songSource;
@@ -74,11 +74,11 @@ public class SongDTO {
         this.songName = songName;
     }
 
-    public int getSongDuration() {
+    public double getSongDuration() {
         return songDuration;
     }
 
-    public void setSongDuration(int songDuration) {
+    public void setSongDuration(double songDuration) {
         this.songDuration = songDuration;
     }
 }

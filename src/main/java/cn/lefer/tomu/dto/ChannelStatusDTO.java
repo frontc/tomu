@@ -8,7 +8,7 @@ package cn.lefer.tomu.dto;
  */
 public class ChannelStatusDTO {
     int songID;
-    int position;
+    double position;
 
     public int getSongID() {
         return songID;
@@ -18,11 +18,11 @@ public class ChannelStatusDTO {
         this.songID = songID;
     }
 
-    public int getPosition() {
+    public double getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(double position) {
         this.position = position;
     }
 }
