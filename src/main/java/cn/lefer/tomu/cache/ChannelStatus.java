@@ -3,8 +3,10 @@ package cn.lefer.tomu.cache;
 import cn.lefer.tomu.entity.PlayHistory;
 import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.exception.BizRestException;
-import cn.lefer.tomu.mapper.PlayHistoryMapper;
+import cn.lefer.tomu.queue.MessagePool;
 import cn.lefer.tools.Date.LeferDate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,70 +23,69 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Component
 public class ChannelStatus {
+    final Log log = LogFactory.getLog(this.getClass());
     //channelID,PlayStatus
-    ConcurrentHashMap<Integer,PlayStatus> channelStatusMap;
-    private final PlayHistoryMapper playHistoryMapper;
+    ConcurrentHashMap<Integer, PlayStatus> channelStatusMap;
+    private final MessagePool messagePool;
 
     @Autowired
-    public ChannelStatus(PlayHistoryMapper playHistoryMapper){
-        channelStatusMap=new ConcurrentHashMap<>();
-        this.playHistoryMapper=playHistoryMapper;
+    public ChannelStatus(MessagePool messagePool) {
+        channelStatusMap = new ConcurrentHashMap<>();
+        this.messagePool = messagePool;
     }
 
     /*
-    * 接收到change请求后，首先修改数据库的playHistory，然后修改缓存
-    * */
-    public boolean changeChannelStatus(int channelID,int songID,int position,String token){
+     * 接收到change请求后，首先修改数据库的playHistory，然后修改缓存
+     * */
+    public boolean changeChannelStatus(int channelID, int songID, int position, String token) {
         //如果当前频道的最新一条播放记录即为同一首歌，那么就更新位置和时间
-        try{
+        log.debug("状态上报前" + channelStatusMap);
+        try {
             Date now = LeferDate.today();
-            PlayHistory lastPlayHistory = playHistoryMapper.selectPlayStatusByChannelID(channelID);
-            if(lastPlayHistory==null||lastPlayHistory.getSongID()!=songID){
-                //如果当前频道的最新一条播放记录不是这首歌，那么插入一条新的播放记录
-                PlayHistory playHistory = new PlayHistory();
-                playHistory.setSongID(songID);
-                playHistory.setChannelID(channelID);
-                playHistory.setLastPosition(position);
-                playHistory.setPlayDate(now);
-                playHistoryMapper.insert(playHistory);
-            }else{
-                playHistoryMapper.updateStatus(position,now ,lastPlayHistory.getPlayHistoryID());
-            }
+            PlayHistory playHistory = new PlayHistory();
+            playHistory.setSongID(songID);
+            playHistory.setChannelID(channelID);
+            playHistory.setLastPosition(position);
+            playHistory.setPlayDate(now);
+            messagePool.getMessageProducer().onData("insert",PlayHistory.class.getName(),playHistory);
             //写入缓存
             PlayStatus playStatus = new PlayStatus();
             playStatus.setSongID(songID);
             playStatus.setPosition(position);
             playStatus.setChangeDate(now);
             Set<String> users = new HashSet<>();
-            users.add(token);
+            users.add(token.trim());
             playStatus.setBroadcast(users);
-            channelStatusMap.put(channelID,playStatus);
-        }catch (Exception ex){
+            channelStatusMap.put(channelID, playStatus);
+        } catch (Exception ex) {
             throw new BizRestException(BizErrorCode.PERSISTENCE_FAILED);
         }
+        log.debug("状态上报后" + channelStatusMap);
         return true;
     }
 
-    public boolean isChanged(int channelID,String token){
-        return channelStatusMap.get(channelID)!=null&&!channelStatusMap.get(channelID).getBroadcast().contains(token);
+    public boolean isChanged(int channelID, String token) {
+        log.debug("状态判断时" + channelStatusMap);
+        return channelStatusMap.get(channelID) != null && !channelStatusMap.get(channelID).getBroadcast().contains(token.trim());
     }
 
-    public int getLastSongID(int channelID){
+    public int getLastSongID(int channelID) {
         return channelStatusMap.get(channelID).getSongID();
     }
-    public int getLastPosition(int channelID){
+
+    public int getLastPosition(int channelID) {
         return channelStatusMap.get(channelID).getPosition();
     }
 
-    public void fire(int channelID,String token){
+    public void fire(int channelID, String token) {
         PlayStatus playStatus = channelStatusMap.get(channelID);
         Set<String> broadcast = playStatus.getBroadcast();
         broadcast.add(token);
         playStatus.setBroadcast(broadcast);
-        channelStatusMap.put(channelID,playStatus);
+        channelStatusMap.put(channelID, playStatus);
     }
 
-    private class PlayStatus{
+    private class PlayStatus {
         int songID;
         int position;
         Date changeDate;
@@ -120,6 +121,16 @@ public class ChannelStatus {
 
         public void setBroadcast(Set<String> broadcast) {
             this.broadcast = broadcast;
+        }
+
+        @Override
+        public String toString() {
+            return "PlayStatus{" +
+                    "songID=" + songID +
+                    ", position=" + position +
+                    ", changeDate=" + changeDate +
+                    ", broadcast=" + broadcast +
+                    '}';
         }
     }
 }
