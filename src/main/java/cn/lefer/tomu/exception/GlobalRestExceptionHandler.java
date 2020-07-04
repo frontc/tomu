@@ -19,6 +19,16 @@ public class GlobalRestExceptionHandler {
         return new ResponseEntity<>(BasicError.generate(BasicErrorCode.ARGUMENT_TYPE_MISMATCH), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    @ExceptionHandler(BasicRestException.class)
+    protected ResponseEntity<Object> basicRestExceptionHandle(BasicRestException ex){
+        if(ex.basicErrorCode.equals(BasicErrorCode.ARGUMENT_VALUE_INVALID)){
+            return new ResponseEntity<>(BasicError.generate(ex.basicErrorCode), HttpStatus.UNPROCESSABLE_ENTITY);
+        }else{
+            return new ResponseEntity<>(BasicError.generate(ex.basicErrorCode), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     @ExceptionHandler({BizRestException.class})
     protected ResponseEntity<Object> bizRestExceptionHandle(BizRestException ex){
         switch (ex.bizErrorCode){

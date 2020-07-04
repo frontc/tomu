@@ -7,5 +7,6 @@ package cn.lefer.tomu.exception;
  * @Description : 基础错误枚举
  */
 public enum BasicErrorCode {
-    ARGUMENT_TYPE_MISMATCH//4220
+    ARGUMENT_TYPE_MISMATCH,//4220
+    ARGUMENT_VALUE_INVALID,//4221
 }

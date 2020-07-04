@@ -17,7 +17,7 @@ import org.springframework.web.server.ServerWebExchange;
 @RestController
 @RequestMapping(value = "/api/v1")
 public class BaseController {
-    @Value("${tomu.version}")
+    @Value("${application.version}")
     String version;
     @Value("${token.key}")
     String tokenKey;

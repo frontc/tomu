@@ -27,8 +27,18 @@
         from T_SONG
         where SONG_ID = #{songID}
     </select>
+    <delete id="deleteByID">
+        delete from T_SONG where SONG_ID=#{songID}
+    </delete>
     <select id="selectByChannelID" resultMap="SongResultMap">
         select * from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
+            #{songStatus}
+        </foreach>
+        limit #{pageSize} offset (#{pageNum}-1)*#{pageSize}
+    </select>
+    <select id="countByChannelID" resultType="INTEGER">
+        select count(1) from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in
         <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
             #{songStatus}
         </foreach>

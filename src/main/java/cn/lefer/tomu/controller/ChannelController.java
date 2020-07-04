@@ -3,9 +3,12 @@ package cn.lefer.tomu.controller;
 import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.dto.ChannelStatusDTO;
 import cn.lefer.tomu.dto.SongDTO;
+import cn.lefer.tomu.exception.BasicErrorCode;
+import cn.lefer.tomu.exception.BasicRestException;
 import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.exception.BizRestException;
 import cn.lefer.tomu.service.ChannelService;
+import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.PlayStatusView;
@@ -52,12 +55,15 @@ public class ChannelController {
     }
 
     //获取频道下的歌单
-    //todo:分页
     @GetMapping(value = "/{channelID}/songs")
-    public List<SongView> getSongs(@PathVariable("channelID") @Validated int channelID) {
-        return channelService.getSongs(channelID);
+    public Page<SongView> getSongs(@PathVariable("channelID") @Validated int channelID,
+                                   @RequestParam @Validated int pageNum,
+                                   @RequestParam @Validated int pageSize) {
+        if(pageNum*pageSize<=0) throw new BasicRestException(BasicErrorCode.ARGUMENT_VALUE_INVALID);
+        return channelService.getSongs(channelID,pageNum,pageSize);
     }
 
+    //添加歌曲
     @PostMapping(value = "/{channelID}/song",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public SongView addSong(@PathVariable("channelID") @Validated int channelID, @Validated SongDTO songDTO) {
         return channelService.addSong(channelID,
@@ -69,6 +75,13 @@ public class ChannelController {
                 songDTO.getSongDuration(),
                 songDTO.getSongSource(),
                 songDTO.getSongUrl());
+    }
+
+    //删除歌曲
+    @DeleteMapping(value = "/{channelID}/song/{songID}")
+    public boolean deleteSong(@PathVariable("channelID") @Validated int channelID,
+                              @PathVariable("songID") @Validated int songID){
+        return channelService.deleteSong(channelID,songID);
     }
 
     /*
@@ -95,6 +108,7 @@ public class ChannelController {
                         .build()));
     }
 
+    //获取频道下的听众
     @GetMapping(value = "/{channelID}/audience")
     public List<String> getAudience(@PathVariable("channelID") @Validated int channelID){
         return onlineStatus.getAudience(channelID);

@@ -9,6 +9,7 @@ import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
+import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
@@ -81,8 +82,8 @@ public class ChannelServiceImpl implements ChannelService{
     }
 
     @Override
-    public Channel deleteSong(int channelID, int songID) {
-        return null;
+    public boolean deleteSong(int channelID, int songID) {
+        return songMapper.deleteByID(songID)>=0;
     }
 
     @Override
@@ -91,13 +92,17 @@ public class ChannelServiceImpl implements ChannelService{
     }
 
     @Override
-    public List<SongView> getSongs(int channelID) {
+    public Page<SongView> getSongs(int channelID, int pageNum, int pageSize) {
         List<SongStatus> songStatusList = new ArrayList<>();
         songStatusList.add(SongStatus.NORMAL);
         songStatusList.add(SongStatus.OUTDATE);
-        List<Song> songs = songMapper.selectByChannelID(channelID,songStatusList);
-        return songs.stream().map(SongView::new).collect(Collectors.toList());
+        List<Song> songs = songMapper.selectByChannelID(channelID,songStatusList,pageNum,pageSize);
+        int total = songMapper.countByChannelID(channelID,songStatusList);
+        List<SongView> songViews = songs.stream().map(SongView::new).collect(Collectors.toList());
+        Page.Builder<SongView> pageBuilder = new Page.Builder<>();
+        return pageBuilder.pageNum(pageNum).pageSize(pageSize).total(total).data(songViews).build();
     }
+
 
     @Override
     public boolean isChannelStatusChanged(int channelID,String token) {

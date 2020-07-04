@@ -1,7 +1,7 @@
 {
   "properties": [
     {
-      "name": "tomu.version",
+      "name": "application.version",
       "type": "java.lang.String",
       "description": "tomu version."
     },
@@ -24,6 +24,16 @@
       "name": "idle.time",
       "type": "java.lang.Long",
       "description": "用户加入频道后允许的最大空置时间."
+    },
+    {
+      "name": "application.name",
+      "type": "java.lang.String",
+      "description": "Description for application.name."
+    },
+    {
+      "name": "application.slogan",
+      "type": "java.lang.String",
+      "description": "Description for application.slogan."
     }
   ]
 }

@@ -19,5 +19,7 @@ import java.util.List;
 public interface SongMapper {
     Song selectByID(@Param("songID") int songID);
     int insert(Song song);
-    List<Song> selectByChannelID(@Param("channelID") int channelID, @Param("songStatusList")List<SongStatus> songStatusList);
+    List<Song> selectByChannelID(@Param("channelID") int channelID, @Param("songStatusList")List<SongStatus> songStatusList, @Param("pageNum") int pageNum, @Param("pageSize") int pageSize);
+    int countByChannelID(@Param("channelID") int channelID, @Param("songStatusList")List<SongStatus> songStatusList);
+    int deleteByID(int songID);
 }

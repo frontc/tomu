@@ -1,0 +1,3 @@
+${AnsiColor.MAGENTA}
+${application.name} v${application.version} ${application.slogan}
+${AnsiColor.BLACK}

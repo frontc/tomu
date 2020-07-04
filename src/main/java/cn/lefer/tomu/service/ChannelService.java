@@ -2,11 +2,10 @@ package cn.lefer.tomu.service;
 
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.entity.Channel;
+import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
-
-import java.util.List;
 
 /**
  * @author : lefer
@@ -30,11 +29,12 @@ public interface ChannelService {
                     SongSource songSource,
                     String songUrl);
     //删除歌曲
-    Channel deleteSong(int channelID,int songID);
+    boolean deleteSong(int channelID,int songID);
     //播放歌曲
     Channel playSong(int channelID,int songID);
     //获得歌单
-    List<SongView> getSongs(int channelID);
+    Page<SongView> getSongs(int channelID, int pageNum, int pageSize);
+
     //歌单的状态是否发生变化
     boolean isChannelStatusChanged(int channelID,String token);
     PlayStatusView getNewPlayStatus(int channelID, String token);
