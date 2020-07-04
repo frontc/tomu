@@ -57,8 +57,8 @@ public class ChannelController {
     //获取频道下的歌单
     @GetMapping(value = "/{channelID}/songs")
     public Page<SongView> getSongs(@PathVariable("channelID") @Validated int channelID,
-                                   @RequestParam @Validated int pageNum,
-                                   @RequestParam @Validated int pageSize) {
+                                   @RequestParam(defaultValue = "1") @Validated int pageNum,
+                                   @RequestParam(defaultValue = "20") @Validated int pageSize) {
         if(pageNum*pageSize<=0) throw new BasicRestException(BasicErrorCode.ARGUMENT_VALUE_INVALID);
         return channelService.getSongs(channelID,pageNum,pageSize);
     }
