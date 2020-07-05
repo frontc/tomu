@@ -20,8 +20,8 @@ public class ChannelView {
         this.channelID = channel.getChannelID();
         this.channelName = channel.getChannelName();
         this.channelCreateDate = channel.getChannelCreateDate();
-        if(channel.getCurrentSong()!=null){
-            this.playStatus= new PlayStatusView(channel.getCurrentSong().getSongID(),channel.getPosition());
+        if (channel.getCurrentSong() != null) {
+            this.playStatus = new PlayStatusView(channel.getCurrentSong().getSongID(), channel.getPosition());
         }
     }
 

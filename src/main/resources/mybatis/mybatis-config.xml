@@ -3,11 +3,11 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-<!--    <plugins>-->
-<!--        <plugin interceptor="com.github.pagehelper.PageInterceptor">-->
-<!--            <property name="helperDialect" value="h2"/>-->
-<!--            <property name="reasonable" value="true"/>-->
-<!--            <property name="supportMethodsArguments" value="true"/>-->
-<!--        </plugin>-->
-<!--    </plugins>-->
+    <!--    <plugins>-->
+    <!--        <plugin interceptor="com.github.pagehelper.PageInterceptor">-->
+    <!--            <property name="helperDialect" value="h2"/>-->
+    <!--            <property name="reasonable" value="true"/>-->
+    <!--            <property name="supportMethodsArguments" value="true"/>-->
+    <!--        </plugin>-->
+    <!--    </plugins>-->
 </configuration>

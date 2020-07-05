@@ -17,6 +17,8 @@ import java.util.Date;
 @Repository
 public interface PlayHistoryMapper {
     int insert(PlayHistory playHistory);
+
     PlayHistory selectPlayStatusByChannelID(@Param("channelID") int channelID);
-    int updateStatus(@Param("lastPosition") double lastPosition,@Param("playDate") Date playDate,@Param("playHistoryID") int playHistoryID);
+
+    int updateStatus(@Param("lastPosition") double lastPosition, @Param("playDate") Date playDate, @Param("playHistoryID") int playHistoryID);
 }

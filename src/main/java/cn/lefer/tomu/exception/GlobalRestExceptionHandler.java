@@ -15,23 +15,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalRestExceptionHandler {
     @ExceptionHandler({TypeMismatchException.class})
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(Exception ex){
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(Exception ex) {
         return new ResponseEntity<>(BasicError.generate(BasicErrorCode.ARGUMENT_TYPE_MISMATCH), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(BasicRestException.class)
-    protected ResponseEntity<Object> basicRestExceptionHandle(BasicRestException ex){
-        if(ex.basicErrorCode.equals(BasicErrorCode.ARGUMENT_VALUE_INVALID)){
+    protected ResponseEntity<Object> basicRestExceptionHandle(BasicRestException ex) {
+        if (ex.basicErrorCode.equals(BasicErrorCode.ARGUMENT_VALUE_INVALID)) {
             return new ResponseEntity<>(BasicError.generate(ex.basicErrorCode), HttpStatus.UNPROCESSABLE_ENTITY);
-        }else{
+        } else {
             return new ResponseEntity<>(BasicError.generate(ex.basicErrorCode), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
     @ExceptionHandler({BizRestException.class})
-    protected ResponseEntity<Object> bizRestExceptionHandle(BizRestException ex){
-        switch (ex.bizErrorCode){
+    protected ResponseEntity<Object> bizRestExceptionHandle(BizRestException ex) {
+        switch (ex.bizErrorCode) {
             case NO_TOKEN:
                 return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.FORBIDDEN);
             case PERSISTENCE_FAILED:

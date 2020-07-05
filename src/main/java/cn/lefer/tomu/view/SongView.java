@@ -24,11 +24,11 @@ public class SongView {
         this.songID = song.getSongID();
         this.songUrl = song.getSongUrl();
         this.songSource = song.getSongSource();
-        this.songName=song.getSongName();
-        this.artistName=song.getArtistName();
-        this.coverUrl=song.getCoverUrl();
-        this.lrcUrl=song.getLrcUrl();
-        this.mp3Url=song.getMp3Url();
+        this.songName = song.getSongName();
+        this.artistName = song.getArtistName();
+        this.coverUrl = song.getCoverUrl();
+        this.lrcUrl = song.getLrcUrl();
+        this.mp3Url = song.getMp3Url();
     }
 
     public int getSongID() {

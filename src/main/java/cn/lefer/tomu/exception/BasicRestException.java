@@ -7,11 +7,11 @@ package cn.lefer.tomu.exception;
  * @Description : 业务异常实体
  */
 
-public class BasicRestException extends RuntimeException{
+public class BasicRestException extends RuntimeException {
     BasicErrorCode basicErrorCode;
 
-    public  BasicRestException(BasicErrorCode basicErrorCode){
-        this.basicErrorCode=basicErrorCode;
+    public BasicRestException(BasicErrorCode basicErrorCode) {
+        this.basicErrorCode = basicErrorCode;
     }
 
     public BasicErrorCode getBasicErrorCode() {

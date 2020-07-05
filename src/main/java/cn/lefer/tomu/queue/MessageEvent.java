@@ -1,7 +1,5 @@
 package cn.lefer.tomu.queue;
 
-import cn.lefer.tomu.entity.PlayHistory;
-
 /**
  * @author : lefer
  * @version : V1.0

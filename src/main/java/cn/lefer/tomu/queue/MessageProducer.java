@@ -13,18 +13,20 @@ import org.apache.commons.logging.LogFactory;
 public class MessageProducer {
     private final RingBuffer<MessageEvent> ringBuffer;
     private final Log log = LogFactory.getLog(this.getClass());
-    public MessageProducer(RingBuffer<MessageEvent> messageEventRingBuffer){
-        this.ringBuffer=messageEventRingBuffer;
+
+    public MessageProducer(RingBuffer<MessageEvent> messageEventRingBuffer) {
+        this.ringBuffer = messageEventRingBuffer;
     }
-    public void onData(String action,String type,Object object){
+
+    public void onData(String action, String type, Object object) {
         long sequence = ringBuffer.next();
-        try{
+        try {
             MessageEvent msg = ringBuffer.get(sequence);
             msg.setAction(action);
             msg.setType(type);
             msg.setValue(object);
-            log.debug("发送消息："+msg.toString());
-        }finally {
+            log.debug("发送消息：" + msg.toString());
+        } finally {
             ringBuffer.publish(sequence);
         }
     }

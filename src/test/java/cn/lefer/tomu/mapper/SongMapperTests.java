@@ -1,14 +1,14 @@
-package cn.lefer.tomu;
+package cn.lefer.tomu.mapper;
 
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.constant.SongStatus;
 import cn.lefer.tomu.entity.Song;
-import cn.lefer.tomu.mapper.SongMapper;
 import cn.lefer.tools.Date.LeferDate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,52 +20,53 @@ import java.util.List;
  * @Description : song持久化接口测试用例
  */
 @SpringBootTest
+@Transactional
 public class SongMapperTests {
     @Autowired
-    SongMapper songMapper;
+    private SongMapper songMapper;
 
     @Test
-    public void testInsert(){
+    public void testInsert() {
         Song song = initSong();
         songMapper.insert(song);
-        Assertions.assertTrue(song.getSongID()>0);
+        Assertions.assertTrue(song.getSongID() > 0);
     }
 
     @Test
-    public void testDelete(){
+    public void testDelete() {
         Song song = initSong();
         songMapper.insert(song);
         Assertions.assertEquals(1, songMapper.deleteByID(song.getSongID()));
     }
 
     @Test
-    public void testSelectByID(){
+    public void testSelectByID() {
         Song song = songMapper.selectByID(2);
         System.out.println(song);
         Assertions.assertNotNull(song);
     }
 
     @Test
-    public void testSelectByChannelID(){
+    public void testSelectByChannelID() {
         List<SongStatus> songStatusList = new ArrayList<>();
         songStatusList.add(SongStatus.NORMAL);
         songStatusList.add(SongStatus.OUTDATE);
-        List<Song> songs = songMapper.selectByChannelID(1,songStatusList,2,1);
+        List<Song> songs = songMapper.selectByChannelID(1, songStatusList, 2, 1);
         System.out.println(songs);
-        Assertions.assertTrue(songs.size()>0);
+        Assertions.assertTrue(songs.size() > 0);
     }
 
     @Test
-    public void testCountByChannelID(){
+    public void testCountByChannelID() {
         List<SongStatus> songStatusList = new ArrayList<>();
         songStatusList.add(SongStatus.NORMAL);
         songStatusList.add(SongStatus.OUTDATE);
-        int total = songMapper.countByChannelID(1,songStatusList);
+        int total = songMapper.countByChannelID(1, songStatusList);
         System.out.println(total);
-        Assertions.assertTrue(total>=0);
+        Assertions.assertTrue(total >= 0);
     }
 
-    private Song initSong(){
+    private Song initSong() {
         Song song = new Song();
         song.setSongUrl("https://music.163.com/#/song?id=1307473639");
         song.setSongSource(SongSource.netease);

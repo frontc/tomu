@@ -6,6 +6,8 @@ import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.exception.BizRestException;
 import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tools.Token.LeferJwt;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -32,15 +34,18 @@ public class JwtWebFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange serverWebExchange, WebFilterChain webFilterChain) {
+        Log log = LogFactory.getLog(this.getClass());
         ServerHttpRequest request = serverWebExchange.getRequest();
         String path = request.getPath().value();
-        if(HttpMethod.GET.equals(request.getMethod()) && path.contains("status")){
+        log.debug(request.getId() + " - " + path);
+        //特殊处理SSE接口
+        if (HttpMethod.GET.equals(request.getMethod()) && path.contains("status")) {
             return webFilterChain.filter(serverWebExchange);
         }
         if (path.contains("channel")) {
             String token = TomuUtils.getToken(serverWebExchange);
             //1.如果没有token
-            if (token==null) {
+            if (token == null) {
                 return fail(serverWebExchange, HttpStatus.FORBIDDEN, BizErrorCode.NO_TOKEN);
             }
             //2.如果token无效
@@ -58,10 +63,10 @@ public class JwtWebFilter implements WebFilter {
             }
             //记录访客的频道
             if (channelID > 0) {
-                try{
+                try {
                     onlineStatus.updateOnlineStatus(token, channelID);
-                }catch (BizRestException ex){
-                    return fail(serverWebExchange,HttpStatus.BAD_REQUEST,ex.getBizErrorCode());
+                } catch (BizRestException ex) {
+                    return fail(serverWebExchange, HttpStatus.BAD_REQUEST, ex.getBizErrorCode());
                 }
             }
         }

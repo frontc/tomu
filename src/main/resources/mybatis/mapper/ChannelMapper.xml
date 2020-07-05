@@ -2,18 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.lefer.tomu.mapper.ChannelMapper">
     <resultMap id="ChannelResultMap" type="cn.lefer.tomu.entity.Channel">
-        <id column="channel_id" jdbcType="INTEGER" property="channelID" />
-        <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
-        <result column="channel_owner_id" jdbcType="INTEGER" property="channelOwnerID" />
-        <result column="channel_key" jdbcType="VARCHAR" property="channelKey" />
-        <result column="channel_crt_date" jdbcType="DATE" property="channelCreateDate" />
+        <id column="channel_id" jdbcType="INTEGER" property="channelID"/>
+        <result column="channel_name" jdbcType="VARCHAR" property="channelName"/>
+        <result column="channel_owner_id" jdbcType="INTEGER" property="channelOwnerID"/>
+        <result column="channel_key" jdbcType="VARCHAR" property="channelKey"/>
+        <result column="channel_crt_date" jdbcType="DATE" property="channelCreateDate"/>
     </resultMap>
 
     <insert id="insert" parameterType="cn.lefer.tomu.entity.Channel" useGeneratedKeys="true" keyProperty="channelID">
-        insert into T_CHANNEL(CHANNEL_NAME,CHANNEL_OWNER_ID,CHANNEL_KEY,CHANNEL_CRT_DATE) values
-            (#{channelName},#{channelOwnerID},#{channelKey},#{channelCreateDate})
+        insert into T_CHANNEL(CHANNEL_NAME, CHANNEL_OWNER_ID, CHANNEL_KEY, CHANNEL_CRT_DATE)
+        values (#{channelName}, #{channelOwnerID}, #{channelKey}, #{channelCreateDate})
     </insert>
     <select id="selectByID" resultMap="ChannelResultMap">
-        select * from T_CHANNEL where CHANNEL_ID=#{channelID}
+        select *
+        from T_CHANNEL
+        where CHANNEL_ID = #{channelID}
     </select>
 </mapper>

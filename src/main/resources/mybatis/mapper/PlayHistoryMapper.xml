@@ -23,7 +23,8 @@
     </select>
     <update id="updateStatus">
         update T_PLAY_HISTORY
-        set last_position = #{lastPosition},play_date = #{playDate}
-        where play_history_id=#{playHistoryID}
+        set last_position = #{lastPosition},
+            play_date     = #{playDate}
+        where play_history_id = #{playHistoryID}
     </update>
 </mapper>

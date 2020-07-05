@@ -8,9 +8,9 @@ import cn.lefer.tomu.exception.BasicRestException;
 import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.exception.BizRestException;
 import cn.lefer.tomu.service.ChannelService;
-import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tomu.view.ChannelView;
+import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +40,8 @@ public class ChannelController {
     OnlineStatus onlineStatus;
 
     //创建频道
-    @PostMapping(value ="")
-    public ChannelView createChannel(){
+    @PostMapping(value = "")
+    public ChannelView createChannel() {
         return channelService.createChannel();
     }
 
@@ -50,7 +50,7 @@ public class ChannelController {
     public ChannelView getChannel(@PathVariable("channelID") @Validated int channelID) {
         if (channelID == -1) throw new BizRestException(BizErrorCode.CHANNEL_IS_FULL);
         ChannelView channelView = channelService.getChannel(channelID);
-        if(channelView==null) throw new BizRestException(BizErrorCode.CHANNEL_NOT_EXISTS);
+        if (channelView == null) throw new BizRestException(BizErrorCode.CHANNEL_NOT_EXISTS);
         return channelView;
     }
 
@@ -59,12 +59,12 @@ public class ChannelController {
     public Page<SongView> getSongs(@PathVariable("channelID") @Validated int channelID,
                                    @RequestParam(defaultValue = "1") @Validated int pageNum,
                                    @RequestParam(defaultValue = "20") @Validated int pageSize) {
-        if(pageNum*pageSize<=0) throw new BasicRestException(BasicErrorCode.ARGUMENT_VALUE_INVALID);
-        return channelService.getSongs(channelID,pageNum,pageSize);
+        if (pageNum * pageSize <= 0) throw new BasicRestException(BasicErrorCode.ARGUMENT_VALUE_INVALID);
+        return channelService.getSongs(channelID, pageNum, pageSize);
     }
 
     //添加歌曲
-    @PostMapping(value = "/{channelID}/song",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/{channelID}/song", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public SongView addSong(@PathVariable("channelID") @Validated int channelID, @Validated SongDTO songDTO) {
         return channelService.addSong(channelID,
                 songDTO.getSongName(),
@@ -80,18 +80,18 @@ public class ChannelController {
     //删除歌曲
     @DeleteMapping(value = "/{channelID}/song/{songID}")
     public boolean deleteSong(@PathVariable("channelID") @Validated int channelID,
-                              @PathVariable("songID") @Validated int songID){
-        return channelService.deleteSong(channelID,songID);
+                              @PathVariable("songID") @Validated int songID) {
+        return channelService.deleteSong(channelID, songID);
     }
 
     /*
-    * 状态变化：用户切换歌曲
-    */
-    @PostMapping(value = "/{channelID}/status",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+     * 状态变化：用户切换歌曲
+     */
+    @PostMapping(value = "/{channelID}/status", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public boolean changeChannelStatus(@PathVariable("channelID") @Validated int channelID,
                                        @Validated ChannelStatusDTO channelStatusDTO,
                                        ServerWebExchange exchange) {
-        return channelService.changeChannelStatus(channelID,channelStatusDTO.getSongID(),channelStatusDTO.getPosition(), TomuUtils.getToken(exchange));
+        return channelService.changeChannelStatus(channelID, channelStatusDTO.getSongID(), channelStatusDTO.getPosition(), TomuUtils.getToken(exchange));
     }
 
     @GetMapping(value = "/{channelID}/status")
@@ -99,18 +99,18 @@ public class ChannelController {
                                                            @RequestParam @Validated String clientID,
                                                            ServerWebExchange exchange) {
         return Flux.interval(Duration.ofSeconds(1))
-                .filter(l -> channelService.isChannelStatusChanged(channelID,clientID))
+                .filter(l -> channelService.isChannelStatusChanged(channelID, clientID))
                 .map(seq -> Tuples.of(seq, ThreadLocalRandom.current().nextInt()))
                 .map(data -> (ServerSentEvent.<PlayStatusView>builder()
                         .event("status")
                         .id(Long.toString(data.getT1()))
-                        .data(channelService.getNewPlayStatus(channelID,clientID))
+                        .data(channelService.getNewPlayStatus(channelID, clientID))
                         .build()));
     }
 
     //获取频道下的听众
     @GetMapping(value = "/{channelID}/audience")
-    public List<String> getAudience(@PathVariable("channelID") @Validated int channelID){
+    public List<String> getAudience(@PathVariable("channelID") @Validated int channelID) {
         return onlineStatus.getAudience(channelID);
     }
 

@@ -15,5 +15,6 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface ChannelMapper {
     int insert(Channel channel);
+
     Channel selectByID(@Param("channelID") int channelID);
 }

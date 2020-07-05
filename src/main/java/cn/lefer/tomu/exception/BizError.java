@@ -10,35 +10,35 @@ import java.util.Map;
  * @Description : 业务错误映射关系
  */
 public class BizError {
-    private final static Map<BizErrorCode, ErrorResponse> bizError = new HashMap<BizErrorCode, ErrorResponse>(){{
-        put(BizErrorCode.CHANNEL_IS_FULL,new ErrorResponse.ErrorResponseBuilder()
+    private final static Map<BizErrorCode, ErrorResponse> bizError = new HashMap<BizErrorCode, ErrorResponse>() {{
+        put(BizErrorCode.CHANNEL_IS_FULL, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4000")
                 .withType("ERROR")
                 .withMessage("频道已满")
                 .build());
-        put(BizErrorCode.CHANNEL_NOT_EXISTS,new ErrorResponse.ErrorResponseBuilder()
+        put(BizErrorCode.CHANNEL_NOT_EXISTS, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4001")
                 .withType("ERROR")
                 .withMessage("频道不存在")
                 .build());
-        put(BizErrorCode.NO_TOKEN,new ErrorResponse.ErrorResponseBuilder()
+        put(BizErrorCode.NO_TOKEN, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4030")
                 .withType("ERROR")
                 .withMessage("未携带token")
                 .build());
-        put(BizErrorCode.INVALID_TOKEN,new ErrorResponse.ErrorResponseBuilder()
+        put(BizErrorCode.INVALID_TOKEN, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4031")
                 .withType("ERROR")
                 .withMessage("token无效")
                 .build());
-        put(BizErrorCode.PERSISTENCE_FAILED,new ErrorResponse.ErrorResponseBuilder()
+        put(BizErrorCode.PERSISTENCE_FAILED, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("5000")
                 .withType("ERROR")
                 .withMessage("服务器内部错误")
                 .build());
     }};
 
-    public static ErrorResponse generate(BizErrorCode bizErrorCode){
+    public static ErrorResponse generate(BizErrorCode bizErrorCode) {
         return bizError.get(bizErrorCode);
     }
 }

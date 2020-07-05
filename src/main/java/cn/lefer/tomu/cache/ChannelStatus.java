@@ -47,7 +47,7 @@ public class ChannelStatus {
             playHistory.setChannelID(channelID);
             playHistory.setLastPosition(position);
             playHistory.setPlayDate(now);
-            messagePool.getMessageProducer().onData("insert",PlayHistory.class.getName(),playHistory);
+            messagePool.getMessageProducer().onData("insert", PlayHistory.class.getName(), playHistory);
             //写入缓存
             PlayStatus playStatus = new PlayStatus();
             playStatus.setSongID(songID);

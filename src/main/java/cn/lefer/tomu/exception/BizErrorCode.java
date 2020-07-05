@@ -12,4 +12,4 @@ public enum BizErrorCode {
     NO_TOKEN,//4030
     INVALID_TOKEN,//4031
     PERSISTENCE_FAILED,//5000
-    }
+}

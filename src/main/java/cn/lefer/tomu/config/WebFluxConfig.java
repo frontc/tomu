@@ -2,6 +2,7 @@ package cn.lefer.tomu.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.CorsRegistry;
+import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 /**
@@ -11,6 +12,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
  * @Description : 允许跨域
  */
 @Configuration
+@EnableWebFlux
 public class WebFluxConfig implements WebFluxConfigurer {
 
     @Override
@@ -18,8 +20,8 @@ public class WebFluxConfig implements WebFluxConfigurer {
 
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods("PUT", "DELETE","POST","GET","DELETE","OPTIONS","PATCH","HEAD")
+                .allowedMethods("PUT", "DELETE", "POST", "GET", "DELETE", "OPTIONS", "PATCH", "HEAD")
                 .allowedHeaders("*")
-                .allowCredentials(true).maxAge(3600*24);
+                .allowCredentials(true).maxAge(3600 * 24);
     }
 }

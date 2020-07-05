@@ -9,8 +9,8 @@ import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
-import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.ChannelView;
+import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 import cn.lefer.tools.Date.LeferDate;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @Description : 频道服务的一个实现
  */
 @Service
-public class ChannelServiceImpl implements ChannelService{
+public class ChannelServiceImpl implements ChannelService {
     ChannelMapper channelMapper;
     PlayHistoryMapper playHistoryMapper;
     SongMapper songMapper;
@@ -45,9 +45,9 @@ public class ChannelServiceImpl implements ChannelService{
     @Override
     public ChannelView getChannel(int channelID) {
         Channel channel = channelMapper.selectByID(channelID);
-        if(channel==null) return null;
+        if (channel == null) return null;
         PlayHistory playHistory = playHistoryMapper.selectPlayStatusByChannelID(channelID);
-        if(playHistory!=null){
+        if (playHistory != null) {
             Song song = songMapper.selectByID(playHistory.getSongID());
             channel.setCurrentSong(song);
             channel.setPosition(playHistory.getLastPosition());
@@ -57,14 +57,14 @@ public class ChannelServiceImpl implements ChannelService{
 
     @Override
     public SongView addSong(int channelID,
-                           String songName,
-                           String artistName,
-                           String coverUrl,
-                           String lrcUrl,
-                           String mp3Url,
+                            String songName,
+                            String artistName,
+                            String coverUrl,
+                            String lrcUrl,
+                            String mp3Url,
                             double songDuration,
-                           SongSource songSource,
-                           String songUrl) {
+                            SongSource songSource,
+                            String songUrl) {
         Song song = new Song();
         song.setSongAddDate(LeferDate.today());
         song.setMp3Url(mp3Url);
@@ -83,7 +83,7 @@ public class ChannelServiceImpl implements ChannelService{
 
     @Override
     public boolean deleteSong(int channelID, int songID) {
-        return songMapper.deleteByID(songID)>=0;
+        return songMapper.deleteByID(songID) >= 0;
     }
 
     @Override
@@ -96,8 +96,8 @@ public class ChannelServiceImpl implements ChannelService{
         List<SongStatus> songStatusList = new ArrayList<>();
         songStatusList.add(SongStatus.NORMAL);
         songStatusList.add(SongStatus.OUTDATE);
-        List<Song> songs = songMapper.selectByChannelID(channelID,songStatusList,pageNum,pageSize);
-        int total = songMapper.countByChannelID(channelID,songStatusList);
+        List<Song> songs = songMapper.selectByChannelID(channelID, songStatusList, pageNum, pageSize);
+        int total = songMapper.countByChannelID(channelID, songStatusList);
         List<SongView> songViews = songs.stream().map(SongView::new).collect(Collectors.toList());
         Page.Builder<SongView> pageBuilder = new Page.Builder<>();
         return pageBuilder.pageNum(pageNum).pageSize(pageSize).total(total).data(songViews).build();
@@ -105,22 +105,22 @@ public class ChannelServiceImpl implements ChannelService{
 
 
     @Override
-    public boolean isChannelStatusChanged(int channelID,String token) {
-        return channelStatus.isChanged(channelID,token);
+    public boolean isChannelStatusChanged(int channelID, String token) {
+        return channelStatus.isChanged(channelID, token);
     }
 
     @Override
-    public PlayStatusView getNewPlayStatus(int channelID,String token){
+    public PlayStatusView getNewPlayStatus(int channelID, String token) {
         PlayStatusView playStatusView = new PlayStatusView();
         playStatusView.setSongID(channelStatus.getLastSongID(channelID));
         playStatusView.setPosition(channelStatus.getLastPosition(channelID));
-        channelStatus.fire(channelID,token);
+        channelStatus.fire(channelID, token);
         return playStatusView;
     }
 
     @Override
     public boolean changeChannelStatus(int channelID, int songID, double position, String token) {
-        return channelStatus.changeChannelStatus(channelID,songID,position,token);
+        return channelStatus.changeChannelStatus(channelID, songID, position, token);
     }
 
     @Autowired

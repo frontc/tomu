@@ -30,18 +30,18 @@ public class BaseController {
         return version;
     }
 
-    @GetMapping(value="/auth")
-    public String getToken(ServerWebExchange exchange){
+    @GetMapping(value = "/auth")
+    public String getToken(ServerWebExchange exchange) {
         String hostString = exchange.getRequest().getRemoteAddress().getHostString();
         return LeferJwt.createToken("tomu",
-                hostString!=null?hostString:"",
+                hostString != null ? hostString : "",
                 tokenKey,
                 ttMillis);
     }
 
     @GetMapping(value = "/who")
-    public String who(ServerWebExchange exchange){
-        String token= TomuUtils.getToken(exchange);
-        return token==null?"anonymous":TomuUtils.getNickname(token);
+    public String who(ServerWebExchange exchange) {
+        String token = TomuUtils.getToken(exchange);
+        return token == null ? "anonymous" : TomuUtils.getNickname(token);
     }
 }

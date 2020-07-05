@@ -59,7 +59,7 @@ public class OnlineStatus {
             //频道有空余座位或该用户本来就在频道内，则直接添加
             if (channelStatusMap.get(channelID).size() < channelSize || channelStatusMap.get(channelID).containsKey(token)) {
                 channelStatusMap.get(channelID).put(token, date);
-            }else{
+            } else {
                 //频道没有空余座位，则开始踢人
                 channelStatusMap.get(channelID).forEach((k, v) -> clearChannelStatusMap(channelID, k, v));
                 //踢出空座位，则更新
@@ -93,8 +93,8 @@ public class OnlineStatus {
         }
     }
 
-    public List<String> getAudience(int channelID){
-         return channelStatusMap.get(channelID).keySet().stream().map(TomuUtils::getNickname).collect(Collectors.toList());
+    public List<String> getAudience(int channelID) {
+        return channelStatusMap.get(channelID).keySet().stream().map(TomuUtils::getNickname).collect(Collectors.toList());
     }
 
     private class ChannelPlus {

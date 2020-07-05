@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 @Component
 public class MessagePool {
     private final MessageProducer messageProducer;
+
     public MessagePool() {
         Log logger = LogFactory.getLog(this.getClass());
         //需要创建多少个生产者

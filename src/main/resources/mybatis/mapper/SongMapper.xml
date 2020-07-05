@@ -28,7 +28,9 @@
         where SONG_ID = #{songID}
     </select>
     <delete id="deleteByID">
-        delete from T_SONG where SONG_ID=#{songID}
+        delete
+        from T_SONG
+        where SONG_ID = #{songID}
     </delete>
     <select id="selectByChannelID" resultMap="SongResultMap">
         select * from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in

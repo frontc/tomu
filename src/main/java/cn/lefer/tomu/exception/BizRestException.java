@@ -7,11 +7,11 @@ package cn.lefer.tomu.exception;
  * @Description : 业务异常实体
  */
 
-public class BizRestException extends RuntimeException{
+public class BizRestException extends RuntimeException {
     BizErrorCode bizErrorCode;
 
     public BizRestException(BizErrorCode bizErrorCode) {
-        this.bizErrorCode=bizErrorCode;
+        this.bizErrorCode = bizErrorCode;
     }
 
     public BizErrorCode getBizErrorCode() {
