@@ -21,6 +21,16 @@ public class BasicError {
                 .withType("ERROR")
                 .withMessage("参数值无效")
                 .build());
+        put(BasicErrorCode.METHOD_NOT_ALLOWED, new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4050")
+                .withType("ERROR")
+                .withMessage("HTTP Method不支持，请查阅Api文档")
+                .build());
+        put(BasicErrorCode.NOT_FOUND, new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4040")
+                .withType("ERROR")
+                .withMessage("不存在的API")
+                .build());
     }};
 
     public static ErrorResponse generate(BasicErrorCode errorCode) {

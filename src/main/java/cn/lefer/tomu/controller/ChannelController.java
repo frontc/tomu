@@ -78,7 +78,7 @@ public class ChannelController {
     }
 
     //删除歌曲
-    @DeleteMapping(value = "/{channelID}/song/{songID}")
+    @RequestMapping(value = "/{channelID}/song/{songID}",method = RequestMethod.DELETE)
     public boolean deleteSong(@PathVariable("channelID") @Validated int channelID,
                               @PathVariable("songID") @Validated int songID) {
         return channelService.deleteSong(channelID, songID);

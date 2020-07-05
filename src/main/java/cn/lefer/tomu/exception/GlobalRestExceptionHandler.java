@@ -1,10 +1,14 @@
 package cn.lefer.tomu.exception;
 
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.MethodNotAllowedException;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.handler.ExceptionHandlingWebHandler;
 
 /**
  * @author : lefer
@@ -13,7 +17,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * @Description : 全局接口异常处理
  */
 @RestControllerAdvice
-public class GlobalRestExceptionHandler {
+@Order(0)
+public class GlobalRestExceptionHandler{
     @ExceptionHandler({TypeMismatchException.class})
     protected ResponseEntity<Object> handleMethodArgumentNotValid(Exception ex) {
         return new ResponseEntity<>(BasicError.generate(BasicErrorCode.ARGUMENT_TYPE_MISMATCH), HttpStatus.UNPROCESSABLE_ENTITY);
@@ -27,7 +32,6 @@ public class GlobalRestExceptionHandler {
             return new ResponseEntity<>(BasicError.generate(ex.basicErrorCode), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @ExceptionHandler({BizRestException.class})
     protected ResponseEntity<Object> bizRestExceptionHandle(BizRestException ex) {

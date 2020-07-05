@@ -9,4 +9,6 @@ package cn.lefer.tomu.exception;
 public enum BasicErrorCode {
     ARGUMENT_TYPE_MISMATCH,//4220
     ARGUMENT_VALUE_INVALID,//4221
+    METHOD_NOT_ALLOWED,//4050
+    NOT_FOUND,//4040
 }
