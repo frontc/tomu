@@ -99,6 +99,8 @@ public class ChannelController {
         return channelService.changeChannelStatus(channelID, channelStatusDTO.getSongID(), channelStatusDTO.getPosition(), TomuUtils.getToken(exchange));
     }
 
+    //todo:将添加歌曲，删除歌曲，其他用户进入，其他用户退出，播放状态变化统一推送到前台。后台缓存改用HashMap<User,Queue<Event>>的方式
+    //TODO:通过队列深度去判断有无可推送，如果用户切换频道原本队列销毁。实际持久化交给disruptor的消费者去做
     @GetMapping(value = "/{channelID}/status")
     public Flux<ServerSentEvent<PlayStatusView>> getStatus(@PathVariable("channelID") @Validated int channelID,
                                                            @RequestParam @Validated String clientID,
