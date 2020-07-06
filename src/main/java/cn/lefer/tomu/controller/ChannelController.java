@@ -13,7 +13,9 @@ import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
+import cn.lefer.tools.Token.LeferJwt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.validation.annotation.Validated;
@@ -112,6 +114,12 @@ public class ChannelController {
     @GetMapping(value = "/{channelID}/audience")
     public List<String> getAudience(@PathVariable("channelID") @Validated int channelID) {
         return onlineStatus.getAudience(channelID);
+    }
+
+    //听众从频道中退出
+    @RequestMapping(value = "/{channelID}/audience",method = RequestMethod.DELETE)
+    public boolean audienceExitFromChannel(@PathVariable("channelID") @Validated int channelID,ServerWebExchange exchange) {
+        return onlineStatus.exit(TomuUtils.getToken(exchange),channelID);
     }
 
     @Autowired

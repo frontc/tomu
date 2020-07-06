@@ -97,6 +97,14 @@ public class OnlineStatus {
         return channelStatusMap.get(channelID).keySet().stream().map(TomuUtils::getNickname).collect(Collectors.toList());
     }
 
+    public boolean exit(String token,int channelID){
+        channelStatusMap.get(channelID).remove(token);
+        if(channelID==userStatusMap.get(token).getChannelID()){
+            userStatusMap.remove(token);
+        }
+        return true;
+    }
+
     private class ChannelPlus {
         int channelID;
         Date updateDate;
