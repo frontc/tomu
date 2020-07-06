@@ -13,9 +13,7 @@ import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
-import cn.lefer.tools.Token.LeferJwt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.validation.annotation.Validated;
@@ -65,6 +63,11 @@ public class ChannelController {
         return channelService.getSongs(channelID, pageNum, pageSize);
     }
 
+    @GetMapping(value = "/{channelID}/songs/all")
+    public Flux<SongView> getSongsAsStream(@PathVariable("channelID") @Validated int channelID) {
+        return Flux.fromStream(channelService.getSongs(channelID).stream());
+    }
+
     //添加歌曲
     @PostMapping(value = "/{channelID}/song", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public SongView addSong(@PathVariable("channelID") @Validated int channelID, @Validated SongDTO songDTO) {
@@ -80,7 +83,7 @@ public class ChannelController {
     }
 
     //删除歌曲
-    @RequestMapping(value = "/{channelID}/song/{songID}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{channelID}/song/{songID}", method = RequestMethod.DELETE)
     public boolean deleteSong(@PathVariable("channelID") @Validated int channelID,
                               @PathVariable("songID") @Validated int songID) {
         return channelService.deleteSong(channelID, songID);
@@ -117,9 +120,9 @@ public class ChannelController {
     }
 
     //听众从频道中退出
-    @RequestMapping(value = "/{channelID}/audience",method = RequestMethod.DELETE)
-    public boolean audienceExitFromChannel(@PathVariable("channelID") @Validated int channelID,ServerWebExchange exchange) {
-        return onlineStatus.exit(TomuUtils.getToken(exchange),channelID);
+    @RequestMapping(value = "/{channelID}/audience", method = RequestMethod.DELETE)
+    public boolean audienceExitFromChannel(@PathVariable("channelID") @Validated int channelID, ServerWebExchange exchange) {
+        return onlineStatus.exit(TomuUtils.getToken(exchange), channelID);
     }
 
     @Autowired

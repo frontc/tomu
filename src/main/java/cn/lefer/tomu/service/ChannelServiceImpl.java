@@ -29,10 +29,27 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ChannelServiceImpl implements ChannelService {
-    ChannelMapper channelMapper;
-    PlayHistoryMapper playHistoryMapper;
-    SongMapper songMapper;
-    ChannelStatus channelStatus;
+    private final ChannelMapper channelMapper;
+    private final PlayHistoryMapper playHistoryMapper;
+    private final SongMapper songMapper;
+    private final ChannelStatus channelStatus;
+
+    private final List<SongStatus> defaultSongStatusList;
+
+    @Autowired
+    public ChannelServiceImpl(ChannelMapper channelMapper,
+                              PlayHistoryMapper playHistoryMapper,
+                              SongMapper songMapper,
+                              ChannelStatus channelStatus){
+        List<SongStatus> songStatusList = new ArrayList<>();
+        songStatusList.add(SongStatus.NORMAL);
+        songStatusList.add(SongStatus.OUTDATE);
+        this.defaultSongStatusList=songStatusList;
+        this.channelMapper=channelMapper;
+        this.playHistoryMapper=playHistoryMapper;
+        this.songMapper=songMapper;
+        this.channelStatus=channelStatus;
+    }
 
     @Override
     public ChannelView createChannel() {
@@ -93,16 +110,18 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public Page<SongView> getSongs(int channelID, int pageNum, int pageSize) {
-        List<SongStatus> songStatusList = new ArrayList<>();
-        songStatusList.add(SongStatus.NORMAL);
-        songStatusList.add(SongStatus.OUTDATE);
-        List<Song> songs = songMapper.selectByChannelID(channelID, songStatusList, pageNum, pageSize);
-        int total = songMapper.countByChannelID(channelID, songStatusList);
+        List<Song> songs = songMapper.selectByChannelID(channelID, defaultSongStatusList, pageNum, pageSize);
+        int total = songMapper.countByChannelID(channelID, defaultSongStatusList);
         List<SongView> songViews = songs.stream().map(SongView::new).collect(Collectors.toList());
         Page.Builder<SongView> pageBuilder = new Page.Builder<>();
         return pageBuilder.pageNum(pageNum).pageSize(pageSize).total(total).data(songViews).build();
     }
 
+    @Override
+    public List<SongView> getSongs(int channelID) {
+        List<Song> songs = songMapper.selectAllByChannelID(channelID, defaultSongStatusList);
+        return songs.stream().map(SongView::new).collect(Collectors.toList());
+    }
 
     @Override
     public boolean isChannelStatusChanged(int channelID, String token) {
@@ -121,25 +140,5 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public boolean changeChannelStatus(int channelID, int songID, double position, String token) {
         return channelStatus.changeChannelStatus(channelID, songID, position, token);
-    }
-
-    @Autowired
-    public void setChannelMapper(ChannelMapper channelMapper) {
-        this.channelMapper = channelMapper;
-    }
-
-    @Autowired
-    public void setPlayHistoryMapper(PlayHistoryMapper playHistoryMapper) {
-        this.playHistoryMapper = playHistoryMapper;
-    }
-
-    @Autowired
-    public void setChannelStatus(ChannelStatus channelStatus) {
-        this.channelStatus = channelStatus;
-    }
-
-    @Autowired
-    public void setSongMapper(SongMapper songMapper) {
-        this.songMapper = songMapper;
     }
 }

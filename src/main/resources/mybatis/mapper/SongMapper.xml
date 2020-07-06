@@ -45,4 +45,11 @@
             #{songStatus}
         </foreach>
     </select>
+
+    <select id="selectAllByChannelID" resultMap="SongResultMap">
+        select * from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
+            #{songStatus}
+        </foreach>
+    </select>
 </mapper>

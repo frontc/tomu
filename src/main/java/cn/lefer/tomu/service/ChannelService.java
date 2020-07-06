@@ -7,6 +7,8 @@ import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 
+import java.util.List;
+
 /**
  * @author : lefer
  * @version : V1.0
@@ -39,7 +41,7 @@ public interface ChannelService {
 
     //获得歌单
     Page<SongView> getSongs(int channelID, int pageNum, int pageSize);
-
+    List<SongView> getSongs(int channelID);
     //歌单的状态是否发生变化
     boolean isChannelStatusChanged(int channelID, String token);
 
