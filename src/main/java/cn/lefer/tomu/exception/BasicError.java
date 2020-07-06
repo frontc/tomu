@@ -14,22 +14,22 @@ public class BasicError {
         put(BasicErrorCode.ARGUMENT_TYPE_MISMATCH, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4220")
                 .withType("ERROR")
-                .withMessage("参数类型不匹配")
+                .withMessage("Argument Type MisMatch.Please Check Your Parameters's Type.")
                 .build());
         put(BasicErrorCode.ARGUMENT_VALUE_INVALID, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4221")
                 .withType("ERROR")
-                .withMessage("参数值无效")
+                .withMessage("Argument Value Invalid.Please Check The Value You Input.")
                 .build());
         put(BasicErrorCode.METHOD_NOT_ALLOWED, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4050")
                 .withType("ERROR")
-                .withMessage("HTTP Method不支持，请查阅Api文档")
+                .withMessage("Http Method Not Allowed.Please Read Tomu API Doc.")
                 .build());
         put(BasicErrorCode.NOT_FOUND, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4040")
                 .withType("ERROR")
-                .withMessage("不存在的API")
+                .withMessage("The API What You Want To Visit Isn't Exists.")
                 .build());
     }};
 

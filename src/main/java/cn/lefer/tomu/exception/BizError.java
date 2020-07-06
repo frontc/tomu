@@ -14,27 +14,27 @@ public class BizError {
         put(BizErrorCode.CHANNEL_IS_FULL, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4000")
                 .withType("ERROR")
-                .withMessage("频道已满")
+                .withMessage("This Channel Is Full.")
                 .build());
         put(BizErrorCode.CHANNEL_NOT_EXISTS, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4001")
                 .withType("ERROR")
-                .withMessage("频道不存在")
+                .withMessage("This Channel Is Not Exits.")
                 .build());
         put(BizErrorCode.NO_TOKEN, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4030")
                 .withType("ERROR")
-                .withMessage("未携带token")
+                .withMessage("Have No Token.You Should Get A Token First.")
                 .build());
         put(BizErrorCode.INVALID_TOKEN, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4031")
                 .withType("ERROR")
-                .withMessage("token无效")
+                .withMessage("Token Is Invalid.You Should Get A Token Again.")
                 .build());
         put(BizErrorCode.PERSISTENCE_FAILED, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("5000")
                 .withType("ERROR")
-                .withMessage("服务器内部错误")
+                .withMessage("This Is A Internal Error Caused By DataBase.Please Concat To Admin To Solve This Problem.")
                 .build());
     }};
 
