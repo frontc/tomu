@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ChannelEventServiceImpl implements ChannelEventService {
     final Log log = LogFactory.getLog(this.getClass());
+    //改变思路，这里不再存放这个用户产生的事件，而是存放这个用户需要处理的事件。
     private ConcurrentHashMap<String, Queue<ChannelEvent<? extends AbstractChannelEventDetail>>> cache;
 
     public ChannelEventServiceImpl() {
@@ -47,11 +48,7 @@ public class ChannelEventServiceImpl implements ChannelEventService {
     }
 
     @Override
-    public int size(String key) {
-        if (cache.get(key) == null) {
-            return 0;
-        } else {
-            return cache.get(key).size();
-        }
+    public boolean isEmpty(String key) {
+        return cache.getOrDefault(key, new LinkedList<>()).peek()==null;
     }
 }

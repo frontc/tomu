@@ -15,5 +15,5 @@ public interface ChannelEventService {
     /*消费一个事件*/
     ChannelEvent<? extends AbstractChannelEventDetail> get(String key);
     /*探测是否有待处理的事件*/
-    int size(String key);
+    boolean isEmpty(String key);
 }

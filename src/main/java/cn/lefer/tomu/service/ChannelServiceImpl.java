@@ -16,6 +16,7 @@ import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
 import cn.lefer.tomu.queue.MessagePool;
+import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
@@ -25,7 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -52,18 +56,18 @@ public class ChannelServiceImpl implements ChannelService {
                               ChannelStatus channelStatus,
                               OnlineStatus onlineStatus,
                               ChannelEventService channelEventService,
-                              MessagePool messagePool){
+                              MessagePool messagePool) {
         List<SongStatus> songStatusList = new ArrayList<>();
         songStatusList.add(SongStatus.NORMAL);
         songStatusList.add(SongStatus.OUTDATE);
-        this.defaultSongStatusList=songStatusList;
-        this.channelMapper=channelMapper;
-        this.playHistoryMapper=playHistoryMapper;
-        this.songMapper=songMapper;
-        this.channelStatus=channelStatus;
-        this.channelEventService=channelEventService;
-        this.messagePool=messagePool;
-        this.onlineStatus=onlineStatus;
+        this.defaultSongStatusList = songStatusList;
+        this.channelMapper = channelMapper;
+        this.playHistoryMapper = playHistoryMapper;
+        this.songMapper = songMapper;
+        this.channelStatus = channelStatus;
+        this.channelEventService = channelEventService;
+        this.messagePool = messagePool;
+        this.onlineStatus = onlineStatus;
     }
 
     @Override
@@ -144,32 +148,19 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public boolean hasNewsInChannel(int channelID,String token){
-           Set<String> audience =  onlineStatus.getAudienceWithFullName(channelID);
-           Optional<String> str =audience.stream().filter(s->(!s.equals(token))&&(channelEventService.size(token)>0)).findFirst();
-           return str.isPresent();
+    public boolean hasNewsInChannel(int channelID, String token) {
+        return !channelEventService.isEmpty(TomuUtils.getNickname(token)) ;
     }
 
     @Override
-    public ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>> getChannelEvent(int channelID,String token,String seq){
-        //TODO:这里没有考虑频道下的人不止两个时的状况，后期修改
-        Set<String> audience =  onlineStatus.getAudienceWithFullName(channelID);
-        Optional<String> str =audience.stream().filter(s->(!s.equals(token))&&(channelEventService.size(token)>0)).findFirst();
-        if(str.isPresent()){
-            String roommate = str.get();
-            ChannelEvent<? extends  AbstractChannelEventDetail> channelEvent = channelEventService.get(roommate);
-            return ServerSentEvent.<ChannelEvent<? extends AbstractChannelEventDetail>>builder()
-                    .event(channelEvent.getType().toString())
-                    .id(seq)
-                    .data(channelEvent)
-                    .build();
-        }else{
-            return ServerSentEvent.<ChannelEvent<? extends AbstractChannelEventDetail>>builder()
-                    .event("unknown")
-                    .id(seq)
-                    .data(null)
-                    .build();
-        }
+    public ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>> getChannelEvent(int channelID, String token, String seq) {
+        ChannelEvent<? extends AbstractChannelEventDetail> channelEvent = channelEventService.get(TomuUtils.getNickname(token));
+        return ServerSentEvent.<ChannelEvent<? extends AbstractChannelEventDetail>>builder()
+                .event(channelEvent.getType().toString())
+                .id(seq)
+                .data(channelEvent)
+                .build();
+
     }
 
     @Override
@@ -191,7 +182,11 @@ public class ChannelServiceImpl implements ChannelService {
         detail.setDate(now);
         detail.setPosition(position);
         detail.setSongID(songID);
-        channelEventService.add(token,builder.withType(ChannelEventType.CHANGE_PLAY_STATUS).withDetail(detail).build());
+        //查找同频道的其他用户
+        List<String> audience = onlineStatus.getAudience(channelID);
+        audience.stream()
+                .filter(aud -> !aud.equals(TomuUtils.getNickname(token)))
+                .forEach(aud -> channelEventService.add(aud, builder.withType(ChannelEventType.CHANGE_PLAY_STATUS).withDetail(detail).build()));
         //记入持久化队列，交由异步线程持久化
         PlayHistory playHistory = new PlayHistory();
         playHistory.setSongID(songID);

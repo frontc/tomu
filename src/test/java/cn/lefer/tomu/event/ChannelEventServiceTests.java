@@ -8,10 +8,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 @SpringBootTest
 public class ChannelEventServiceTests {
     @Autowired
     ChannelEventService channelEventService;
+
+    @Test
+    public void testHashMap(){
+        ConcurrentHashMap<String,String> map = new ConcurrentHashMap<String, String>();
+        System.out.println(map.get("1"));
+        Assertions.assertTrue(map.get("1")==null);
+
+    }
 
     @Test
     public void testSize() {
