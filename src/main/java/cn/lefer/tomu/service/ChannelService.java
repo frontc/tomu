@@ -2,10 +2,13 @@ package cn.lefer.tomu.service;
 
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.entity.Channel;
+import cn.lefer.tomu.event.ChannelEvent;
+import cn.lefer.tomu.event.detail.AbstractChannelEventDetail;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
+import org.springframework.http.codec.ServerSentEvent;
 
 import java.util.List;
 
@@ -44,6 +47,8 @@ public interface ChannelService {
     List<SongView> getSongs(int channelID);
     //歌单的状态是否发生变化
     boolean isChannelStatusChanged(int channelID, String token);
+    boolean hasNewsInChannel(int channelID,String token);
+    ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>> getChannelEvent(int channelID, String token, String seq);
 
     PlayStatusView getNewPlayStatus(int channelID, String token);
 

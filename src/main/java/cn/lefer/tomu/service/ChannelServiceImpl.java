@@ -1,24 +1,31 @@
 package cn.lefer.tomu.service;
 
 import cn.lefer.tomu.cache.ChannelStatus;
+import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.constant.SongStatus;
 import cn.lefer.tomu.entity.Channel;
 import cn.lefer.tomu.entity.PlayHistory;
 import cn.lefer.tomu.entity.Song;
+import cn.lefer.tomu.event.ChannelEvent;
+import cn.lefer.tomu.event.ChannelEventService;
+import cn.lefer.tomu.event.ChannelEventType;
+import cn.lefer.tomu.event.detail.AbstractChannelEventDetail;
+import cn.lefer.tomu.event.detail.ChannelPlayStatusChangeEventDetail;
 import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
+import cn.lefer.tomu.queue.MessagePool;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 import cn.lefer.tools.Date.LeferDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -33,14 +40,19 @@ public class ChannelServiceImpl implements ChannelService {
     private final PlayHistoryMapper playHistoryMapper;
     private final SongMapper songMapper;
     private final ChannelStatus channelStatus;
-
+    private final ChannelEventService channelEventService;
+    private final MessagePool messagePool;
     private final List<SongStatus> defaultSongStatusList;
+    private final OnlineStatus onlineStatus;
 
     @Autowired
     public ChannelServiceImpl(ChannelMapper channelMapper,
                               PlayHistoryMapper playHistoryMapper,
                               SongMapper songMapper,
-                              ChannelStatus channelStatus){
+                              ChannelStatus channelStatus,
+                              OnlineStatus onlineStatus,
+                              ChannelEventService channelEventService,
+                              MessagePool messagePool){
         List<SongStatus> songStatusList = new ArrayList<>();
         songStatusList.add(SongStatus.NORMAL);
         songStatusList.add(SongStatus.OUTDATE);
@@ -49,6 +61,9 @@ public class ChannelServiceImpl implements ChannelService {
         this.playHistoryMapper=playHistoryMapper;
         this.songMapper=songMapper;
         this.channelStatus=channelStatus;
+        this.channelEventService=channelEventService;
+        this.messagePool=messagePool;
+        this.onlineStatus=onlineStatus;
     }
 
     @Override
@@ -129,6 +144,35 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
+    public boolean hasNewsInChannel(int channelID,String token){
+           Set<String> audience =  onlineStatus.getAudienceWithFullName(channelID);
+           Optional<String> str =audience.stream().filter(s->(!s.equals(token))&&(channelEventService.size(token)>0)).findFirst();
+           return str.isPresent();
+    }
+
+    @Override
+    public ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>> getChannelEvent(int channelID,String token,String seq){
+        //TODO:这里没有考虑频道下的人不止两个时的状况，后期修改
+        Set<String> audience =  onlineStatus.getAudienceWithFullName(channelID);
+        Optional<String> str =audience.stream().filter(s->(!s.equals(token))&&(channelEventService.size(token)>0)).findFirst();
+        if(str.isPresent()){
+            String roommate = str.get();
+            ChannelEvent<? extends  AbstractChannelEventDetail> channelEvent = channelEventService.get(roommate);
+            return ServerSentEvent.<ChannelEvent<? extends AbstractChannelEventDetail>>builder()
+                    .event(channelEvent.getType().toString())
+                    .id(seq)
+                    .data(channelEvent)
+                    .build();
+        }else{
+            return ServerSentEvent.<ChannelEvent<? extends AbstractChannelEventDetail>>builder()
+                    .event("unknown")
+                    .id(seq)
+                    .data(null)
+                    .build();
+        }
+    }
+
+    @Override
     public PlayStatusView getNewPlayStatus(int channelID, String token) {
         PlayStatusView playStatusView = new PlayStatusView();
         playStatusView.setSongID(channelStatus.getLastSongID(channelID));
@@ -139,6 +183,22 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public boolean changeChannelStatus(int channelID, int songID, double position, String token) {
-        return channelStatus.changeChannelStatus(channelID, songID, position, token);
+        Date now = LeferDate.today();
+        //记入事件队列，准备对外广播
+        ChannelEvent.Builder<ChannelPlayStatusChangeEventDetail> builder = new ChannelEvent.Builder<>();
+        ChannelPlayStatusChangeEventDetail detail = new ChannelPlayStatusChangeEventDetail();
+        detail.setChannelID(channelID);
+        detail.setDate(now);
+        detail.setPosition(position);
+        detail.setSongID(songID);
+        channelEventService.add(token,builder.withType(ChannelEventType.CHANGE_PLAY_STATUS).withDetail(detail).build());
+        //记入持久化队列，交由异步线程持久化
+        PlayHistory playHistory = new PlayHistory();
+        playHistory.setSongID(songID);
+        playHistory.setChannelID(channelID);
+        playHistory.setLastPosition(position);
+        playHistory.setPlayDate(now);
+        messagePool.getMessageProducer().onData("insert", PlayHistory.class.getName(), playHistory);
+        return true;
     }
 }

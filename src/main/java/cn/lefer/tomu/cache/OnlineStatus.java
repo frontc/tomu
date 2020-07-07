@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -95,6 +96,10 @@ public class OnlineStatus {
 
     public List<String> getAudience(int channelID) {
         return channelStatusMap.get(channelID).keySet().stream().map(TomuUtils::getNickname).collect(Collectors.toList());
+    }
+
+    public Set<String> getAudienceWithFullName(int channelID) {
+        return channelStatusMap.get(channelID).keySet();
     }
 
     public boolean exit(String token,int channelID){

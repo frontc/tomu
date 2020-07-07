@@ -3,6 +3,8 @@ package cn.lefer.tomu.controller;
 import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.dto.ChannelStatusDTO;
 import cn.lefer.tomu.dto.SongDTO;
+import cn.lefer.tomu.event.ChannelEvent;
+import cn.lefer.tomu.event.detail.AbstractChannelEventDetail;
 import cn.lefer.tomu.exception.BasicErrorCode;
 import cn.lefer.tomu.exception.BasicRestException;
 import cn.lefer.tomu.exception.BizErrorCode;
@@ -102,17 +104,12 @@ public class ChannelController {
     //todo:将添加歌曲，删除歌曲，其他用户进入，其他用户退出，播放状态变化统一推送到前台。后台缓存改用HashMap<User,Queue<Event>>的方式
     //TODO:通过队列深度去判断有无可推送，如果用户切换频道原本队列销毁。实际持久化交给disruptor的消费者去做
     @GetMapping(value = "/{channelID}/status")
-    public Flux<ServerSentEvent<PlayStatusView>> getStatus(@PathVariable("channelID") @Validated int channelID,
-                                                           @RequestParam @Validated String clientID,
-                                                           ServerWebExchange exchange) {
+    public Flux<ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>>> getStatus(@PathVariable("channelID") @Validated int channelID,
+                                                                                               @RequestParam @Validated String clientID) {
         return Flux.interval(Duration.ofSeconds(1))
-                .filter(l -> channelService.isChannelStatusChanged(channelID, clientID))
+                .filter(l -> channelService.hasNewsInChannel(channelID,clientID))
                 .map(seq -> Tuples.of(seq, ThreadLocalRandom.current().nextInt()))
-                .map(data -> (ServerSentEvent.<PlayStatusView>builder()
-                        .event("status")
-                        .id(Long.toString(data.getT1()))
-                        .data(channelService.getNewPlayStatus(channelID, clientID))
-                        .build()));
+                .map(data -> channelService.getChannelEvent(channelID,clientID,Long.toString(data.getT1())));
     }
 
     //获取频道下的听众
