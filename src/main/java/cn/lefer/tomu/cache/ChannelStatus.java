@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Description : 频道状态缓存
  */
 @Component
+@Deprecated
 public class ChannelStatus {
     final Log log = LogFactory.getLog(this.getClass());
     //channelID,PlayStatus

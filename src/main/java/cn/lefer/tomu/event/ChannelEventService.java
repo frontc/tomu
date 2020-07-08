@@ -16,4 +16,6 @@ public interface ChannelEventService {
     ChannelEvent<? extends AbstractChannelEventDetail> get(String key);
     /*探测是否有待处理的事件*/
     boolean isEmpty(String key);
+    /*向频道下的其他用户发送一个广播*/
+    void broadcast(int channelID, String currentToke, ChannelEvent<? extends AbstractChannelEventDetail> channelEvent);
 }

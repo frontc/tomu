@@ -23,7 +23,7 @@ public interface ChannelService {
     ChannelView createChannel();
 
     //根据channelID获取一个频道
-    ChannelView getChannel(int channelID);
+    ChannelView getChannel(int channelID,String token);
 
     //增加歌曲
     SongView addSong(int channelID,
@@ -38,20 +38,30 @@ public interface ChannelService {
                      String songUrl);
 
     //删除歌曲
-    boolean deleteSong(int channelID, int songID);
+    boolean deleteSong(int channelID, int songID, String token);
 
     //播放歌曲
     Channel playSong(int channelID, int songID);
 
     //获得歌单
     Page<SongView> getSongs(int channelID, int pageNum, int pageSize);
+
     List<SongView> getSongs(int channelID);
+
     //歌单的状态是否发生变化
-    boolean isChannelStatusChanged(int channelID, String token);
-    boolean hasNewsInChannel(int channelID,String token);
+
+
+    boolean hasNewsInChannel(int channelID, String token);
+
     ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>> getChannelEvent(int channelID, String token, String seq);
 
-    PlayStatusView getNewPlayStatus(int channelID, String token);
+
 
     boolean changeChannelStatus(int channelID, int songID, double position, String token);
+
+    //用户退出
+    boolean exit(int channelID, String token);
+
+    //获取频道下的听众
+    List<String> getAudienceWithNickName(int channelID);
 }

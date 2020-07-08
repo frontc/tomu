@@ -1,6 +1,5 @@
 package cn.lefer.tomu.service;
 
-import cn.lefer.tomu.cache.ChannelStatus;
 import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.constant.SongStatus;
@@ -10,9 +9,7 @@ import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.event.ChannelEvent;
 import cn.lefer.tomu.event.ChannelEventService;
 import cn.lefer.tomu.event.ChannelEventType;
-import cn.lefer.tomu.event.detail.AbstractChannelEventDetail;
-import cn.lefer.tomu.event.detail.AddSongEventDetail;
-import cn.lefer.tomu.event.detail.ChannelPlayStatusChangeEventDetail;
+import cn.lefer.tomu.event.detail.*;
 import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
@@ -20,7 +17,6 @@ import cn.lefer.tomu.queue.MessagePool;
 import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
-import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 import cn.lefer.tools.Date.LeferDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +39,6 @@ public class ChannelServiceImpl implements ChannelService {
     private final ChannelMapper channelMapper;
     private final PlayHistoryMapper playHistoryMapper;
     private final SongMapper songMapper;
-    private final ChannelStatus channelStatus;
     private final ChannelEventService channelEventService;
     private final MessagePool messagePool;
     private final List<SongStatus> defaultSongStatusList;
@@ -53,7 +48,6 @@ public class ChannelServiceImpl implements ChannelService {
     public ChannelServiceImpl(ChannelMapper channelMapper,
                               PlayHistoryMapper playHistoryMapper,
                               SongMapper songMapper,
-                              ChannelStatus channelStatus,
                               OnlineStatus onlineStatus,
                               ChannelEventService channelEventService,
                               MessagePool messagePool) {
@@ -64,7 +58,6 @@ public class ChannelServiceImpl implements ChannelService {
         this.channelMapper = channelMapper;
         this.playHistoryMapper = playHistoryMapper;
         this.songMapper = songMapper;
-        this.channelStatus = channelStatus;
         this.channelEventService = channelEventService;
         this.messagePool = messagePool;
         this.onlineStatus = onlineStatus;
@@ -79,7 +72,7 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public ChannelView getChannel(int channelID) {
+    public ChannelView getChannel(int channelID, String token) {
         Channel channel = channelMapper.selectByID(channelID);
         if (channel == null) return null;
         PlayHistory playHistory = playHistoryMapper.selectPlayStatusByChannelID(channelID);
@@ -88,6 +81,13 @@ public class ChannelServiceImpl implements ChannelService {
             channel.setCurrentSong(song);
             channel.setPosition(playHistory.getLastPosition());
         }
+        //将用户进入的事件推入广播
+        EnterChannelEventDetail detail = new EnterChannelEventDetail();
+        detail.setChannelID(channelID);
+        detail.setDate(LeferDate.today());
+        detail.setNickName(TomuUtils.getNickname(token));
+        ChannelEvent.Builder<EnterChannelEventDetail> builder = new ChannelEvent.Builder<>();
+        channelEventService.broadcast(channelID, token, builder.withType(ChannelEventType.AUDIENCE_IN).withDetail(detail).build());
         return new ChannelView(channel);
     }
 
@@ -122,14 +122,22 @@ public class ChannelServiceImpl implements ChannelService {
         detail.setChannelID(channelID);
         detail.setDate(now);
         detail.setSongView(songView);
-        ChannelEvent.Builder<AddSongEventDetail> builder =  new ChannelEvent.Builder<>();
-        broadcast(channelID,token,builder.withType(ChannelEventType.ADD_SONG).withDetail(detail).build());
+        ChannelEvent.Builder<AddSongEventDetail> builder = new ChannelEvent.Builder<>();
+        channelEventService.broadcast(channelID, token, builder.withType(ChannelEventType.ADD_SONG).withDetail(detail).build());
         return songView;
     }
 
     @Override
-    public boolean deleteSong(int channelID, int songID) {
-        return songMapper.deleteByID(songID) >= 0;
+    public boolean deleteSong(int channelID, int songID, String token) {
+        songMapper.deleteByID(songID);
+        //将删除歌曲的事件推入广播
+        DeleteSongEventDetail detail = new DeleteSongEventDetail();
+        detail.setSongID(songID);
+        detail.setChannelID(channelID);
+        detail.setDate(LeferDate.today());
+        ChannelEvent.Builder<DeleteSongEventDetail> builder = new ChannelEvent.Builder<>();
+        channelEventService.broadcast(channelID, token, builder.withType(ChannelEventType.DELETE_SONG).withDetail(detail).build());
+        return true;
     }
 
     @Override
@@ -152,14 +160,10 @@ public class ChannelServiceImpl implements ChannelService {
         return songs.stream().map(SongView::new).collect(Collectors.toList());
     }
 
-    @Override
-    public boolean isChannelStatusChanged(int channelID, String token) {
-        return channelStatus.isChanged(channelID, token);
-    }
 
     @Override
     public boolean hasNewsInChannel(int channelID, String token) {
-        return !channelEventService.isEmpty(TomuUtils.getNickname(token)) ;
+        return !channelEventService.isEmpty(TomuUtils.getNickname(token));
     }
 
     @Override
@@ -173,14 +177,6 @@ public class ChannelServiceImpl implements ChannelService {
 
     }
 
-    @Override
-    public PlayStatusView getNewPlayStatus(int channelID, String token) {
-        PlayStatusView playStatusView = new PlayStatusView();
-        playStatusView.setSongID(channelStatus.getLastSongID(channelID));
-        playStatusView.setPosition(channelStatus.getLastPosition(channelID));
-        channelStatus.fire(channelID, token);
-        return playStatusView;
-    }
 
     @Override
     public boolean changeChannelStatus(int channelID, int songID, double position, String token) {
@@ -192,7 +188,7 @@ public class ChannelServiceImpl implements ChannelService {
         detail.setDate(now);
         detail.setPosition(position);
         detail.setSongID(songID);
-        broadcast(channelID,token,builder.withType(ChannelEventType.CHANGE_PLAY_STATUS).withDetail(detail).build());
+        channelEventService.broadcast(channelID, token, builder.withType(ChannelEventType.CHANGE_PLAY_STATUS).withDetail(detail).build());
         //记入持久化队列，交由异步线程持久化
         PlayHistory playHistory = new PlayHistory();
         playHistory.setSongID(songID);
@@ -203,14 +199,21 @@ public class ChannelServiceImpl implements ChannelService {
         return true;
     }
 
-    /*
-    * 发布广播
-    * */
-    private void broadcast(int channelID,String currentToke,ChannelEvent<? extends AbstractChannelEventDetail> channelEvent){
-        List<String> audience = onlineStatus.getAudienceWithNickName(channelID);
-        String currentNickName = TomuUtils.getNickname(currentToke);
-        audience.stream()
-                .filter(aud -> !aud.equals(currentNickName))
-                .forEach(aud -> channelEventService.add(aud, channelEvent));
+    @Override
+    public boolean exit(int channelID, String token) {
+        //记入事件队列，对外广播
+        ExitChannelEventDetail detail = new ExitChannelEventDetail();
+        detail.setDate(LeferDate.today());
+        detail.setChannelID(channelID);
+        detail.setNickName(TomuUtils.getNickname(token));
+        ChannelEvent.Builder<ExitChannelEventDetail> builder = new ChannelEvent.Builder<>();
+        channelEventService.broadcast(channelID, token, builder.withType(ChannelEventType.AUDIENCE_OUT).withDetail(detail).build());
+        onlineStatus.exit(token, channelID);
+        return true;
+    }
+
+    @Override
+    public List<String> getAudienceWithNickName(int channelID) {
+        return onlineStatus.getAudienceWithNickName(channelID);
     }
 }

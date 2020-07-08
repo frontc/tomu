@@ -1,6 +1,5 @@
 package cn.lefer.tomu.controller;
 
-import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.dto.ChannelStatusDTO;
 import cn.lefer.tomu.dto.SongDTO;
 import cn.lefer.tomu.event.ChannelEvent;
@@ -13,7 +12,6 @@ import cn.lefer.tomu.service.ChannelService;
 import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
-import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -39,7 +37,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ChannelController {
 
     ChannelService channelService;
-    OnlineStatus onlineStatus;
 
     //创建频道
     @PostMapping(value = "")
@@ -49,9 +46,9 @@ public class ChannelController {
 
     //获取频道信息
     @GetMapping(value = "/{channelID}")
-    public ChannelView getChannel(@PathVariable("channelID") @Validated int channelID) {
-        if (channelID == -1) throw new BizRestException(BizErrorCode.CHANNEL_IS_FULL);
-        ChannelView channelView = channelService.getChannel(channelID);
+    public ChannelView getChannel(@PathVariable("channelID") @Validated int channelID, ServerWebExchange exchange) {
+        if (channelID < 1) throw new BasicRestException(BasicErrorCode.ARGUMENT_VALUE_INVALID);
+        ChannelView channelView = channelService.getChannel(channelID, TomuUtils.getToken(exchange));
         if (channelView == null) throw new BizRestException(BizErrorCode.CHANNEL_NOT_EXISTS);
         return channelView;
     }
@@ -90,8 +87,9 @@ public class ChannelController {
     //删除歌曲
     @RequestMapping(value = "/{channelID}/song/{songID}", method = RequestMethod.DELETE)
     public boolean deleteSong(@PathVariable("channelID") @Validated int channelID,
-                              @PathVariable("songID") @Validated int songID) {
-        return channelService.deleteSong(channelID, songID);
+                              @PathVariable("songID") @Validated int songID,
+                              ServerWebExchange exchange) {
+        return channelService.deleteSong(channelID, songID, TomuUtils.getToken(exchange));
     }
 
     /*
@@ -104,27 +102,28 @@ public class ChannelController {
         return channelService.changeChannelStatus(channelID, channelStatusDTO.getSongID(), channelStatusDTO.getPosition(), TomuUtils.getToken(exchange));
     }
 
-    //todo:将添加歌曲，删除歌曲，其他用户进入，其他用户退出，播放状态变化统一推送到前台。后台缓存改用HashMap<User,Queue<Event>>的方式
-    //TODO:通过队列深度去判断有无可推送，如果用户切换频道原本队列销毁。实际持久化交给disruptor的消费者去做
+    /*
+     * 推送事件到前端
+     */
     @GetMapping(value = "/{channelID}/status")
     public Flux<ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>>> getStatus(@PathVariable("channelID") @Validated int channelID,
                                                                                                @RequestParam @Validated String clientID) {
         return Flux.interval(Duration.ofSeconds(1))
-                .filter(l -> channelService.hasNewsInChannel(channelID,clientID))
+                .filter(l -> channelService.hasNewsInChannel(channelID, clientID))
                 .map(seq -> Tuples.of(seq, ThreadLocalRandom.current().nextInt()))
-                .map(data -> channelService.getChannelEvent(channelID,clientID,Long.toString(data.getT1())));
+                .map(data -> channelService.getChannelEvent(channelID, clientID, Long.toString(data.getT1())));
     }
 
     //获取频道下的听众
     @GetMapping(value = "/{channelID}/audience")
     public List<String> getAudience(@PathVariable("channelID") @Validated int channelID) {
-        return onlineStatus.getAudienceWithNickName(channelID);
+        return channelService.getAudienceWithNickName(channelID);
     }
 
     //听众从频道中退出
     @RequestMapping(value = "/{channelID}/audience", method = RequestMethod.DELETE)
     public boolean audienceExitFromChannel(@PathVariable("channelID") @Validated int channelID, ServerWebExchange exchange) {
-        return onlineStatus.exit(TomuUtils.getToken(exchange), channelID);
+        return channelService.exit(channelID, TomuUtils.getToken(exchange));
     }
 
     @Autowired
@@ -132,8 +131,4 @@ public class ChannelController {
         this.channelService = channelService;
     }
 
-    @Autowired
-    public void setOnlineStatus(OnlineStatus onlineStatus) {
-        this.onlineStatus = onlineStatus;
-    }
 }
