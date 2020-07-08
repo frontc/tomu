@@ -10,6 +10,7 @@ import cn.lefer.tomu.view.PlayStatusView;
 import cn.lefer.tomu.view.SongView;
 import org.springframework.http.codec.ServerSentEvent;
 
+import java.io.IOException;
 import java.util.List;
 
 /**

@@ -13,6 +13,7 @@ import cn.lefer.tomu.utils.TomuUtils;
 import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.SongView;
+import cn.lefer.tools.Net.LeferNet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
@@ -22,6 +23,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.util.function.Tuples;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -71,17 +73,23 @@ public class ChannelController {
     @PostMapping(value = "/{channelID}/song", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public SongView addSong(@PathVariable("channelID") @Validated int channelID,
                             @Validated SongDTO songDTO,
-                            ServerWebExchange exchange) {
-        return channelService.addSong(channelID,
-                TomuUtils.getToken(exchange),
-                songDTO.getSongName(),
-                songDTO.getArtistName(),
-                songDTO.getCoverUrl(),
-                songDTO.getLrcUrl(),
-                songDTO.getMp3Url(),
-                songDTO.getSongDuration(),
-                songDTO.getSongSource(),
-                songDTO.getSongUrl());
+                            ServerWebExchange exchange) throws IOException {
+        if(LeferNet.isValid(songDTO.getMp3Url())){
+            return channelService.addSong(channelID,
+                    TomuUtils.getToken(exchange),
+                    songDTO.getSongName(),
+                    songDTO.getArtistName(),
+                    songDTO.getCoverUrl(),
+                    songDTO.getLrcUrl(),
+                    songDTO.getMp3Url(),
+                    songDTO.getSongDuration(),
+                    songDTO.getSongSource(),
+                    songDTO.getSongUrl());
+        }else{
+            throw new BizRestException(BizErrorCode.URL_TEST_FAILED);
+        }
+
+
     }
 
     //删除歌曲

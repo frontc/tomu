@@ -27,6 +27,16 @@
         from T_SONG
         where SONG_ID = #{songID}
     </select>
+
+    <select id="selectAll" resultMap="SongResultMap">
+        select *
+        from T_SONG
+        where SONG_STATUS in
+        <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
+            #{songStatus}
+        </foreach>
+    </select>
+
     <delete id="deleteByID">
         delete
         from T_SONG

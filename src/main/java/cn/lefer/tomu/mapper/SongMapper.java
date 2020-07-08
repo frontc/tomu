@@ -28,4 +28,6 @@ public interface SongMapper {
     int countByChannelID(@Param("channelID") int channelID, @Param("songStatusList") List<SongStatus> songStatusList);
 
     int deleteByID(int songID);
+
+    List<Song> selectAll(@Param("songStatusList") List<SongStatus> songStatusList);
 }

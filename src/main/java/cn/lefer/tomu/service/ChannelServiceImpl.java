@@ -19,10 +19,12 @@ import cn.lefer.tomu.view.ChannelView;
 import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.SongView;
 import cn.lefer.tools.Date.LeferDate;
+import cn.lefer.tools.Net.LeferNet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -101,7 +103,7 @@ public class ChannelServiceImpl implements ChannelService {
                             String mp3Url,
                             double songDuration,
                             SongSource songSource,
-                            String songUrl) {
+                            String songUrl){
         Date now = LeferDate.today();
         Song song = new Song();
         song.setSongAddDate(now);

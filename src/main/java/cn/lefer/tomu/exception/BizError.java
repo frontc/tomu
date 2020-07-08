@@ -36,6 +36,21 @@ public class BizError {
                 .withType("ERROR")
                 .withMessage("This Is A Internal Error Caused By DataBase.Please Concat To Admin To Solve This Problem.")
                 .build());
+        put(BizErrorCode.URL_INVALID, new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4060")
+                .withType("ERROR")
+                .withMessage("The MP3 URL IS INVALID.")
+                .build());
+        put(BizErrorCode.URL_TEST_FAILED, new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4061")
+                .withType("ERROR")
+                .withMessage("The MP3 URL TEST FAILED.")
+                .build());
+        put(BizErrorCode.URL_CONNECTION_TIME_OUT, new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4061")
+                .withType("ERROR")
+                .withMessage("The MP3 URL CANNOT REACHABLE.")
+                .build());
     }};
 
     public static ErrorResponse generate(BizErrorCode bizErrorCode) {

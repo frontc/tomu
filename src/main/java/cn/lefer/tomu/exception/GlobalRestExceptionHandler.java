@@ -10,6 +10,10 @@ import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.handler.ExceptionHandlingWebHandler;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+
 /**
  * @author : lefer
  * @version : V1.0
@@ -19,6 +23,16 @@ import org.springframework.web.server.handler.ExceptionHandlingWebHandler;
 @RestControllerAdvice
 @Order(0)
 public class GlobalRestExceptionHandler{
+    @ExceptionHandler({MalformedURLException.class})
+    protected ResponseEntity<Object> handleMalformedURLException(Exception ex) {
+        return new ResponseEntity<>(BizError.generate(BizErrorCode.URL_INVALID), HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler({SocketTimeoutException.class})
+    protected ResponseEntity<Object> handleSocketTimeoutException(Exception ex) {
+        return new ResponseEntity<>(BizError.generate(BizErrorCode.URL_CONNECTION_TIME_OUT), HttpStatus.NOT_ACCEPTABLE);
+    }
+
     @ExceptionHandler({TypeMismatchException.class})
     protected ResponseEntity<Object> handleMethodArgumentNotValid(Exception ex) {
         return new ResponseEntity<>(BasicError.generate(BasicErrorCode.ARGUMENT_TYPE_MISMATCH), HttpStatus.UNPROCESSABLE_ENTITY);
@@ -40,6 +54,8 @@ public class GlobalRestExceptionHandler{
                 return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.FORBIDDEN);
             case PERSISTENCE_FAILED:
                 return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.INTERNAL_SERVER_ERROR);
+            case URL_TEST_FAILED:
+                return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.NOT_ACCEPTABLE);
             default:
                 return new ResponseEntity<>(BizError.generate(ex.bizErrorCode), HttpStatus.BAD_REQUEST);
         }
