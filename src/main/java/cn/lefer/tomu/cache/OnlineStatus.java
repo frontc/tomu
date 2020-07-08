@@ -94,7 +94,7 @@ public class OnlineStatus {
         }
     }
 
-    public List<String> getAudience(int channelID) {
+    public List<String> getAudienceWithNickName(int channelID) {
         return channelStatusMap.get(channelID).keySet().stream().map(TomuUtils::getNickname).collect(Collectors.toList());
     }
 

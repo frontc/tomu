@@ -17,21 +17,13 @@ public class ChannelEventServiceTests {
     ChannelEventService channelEventService;
 
     @Test
-    public void testHashMap(){
-        ConcurrentHashMap<String,String> map = new ConcurrentHashMap<String, String>();
-        System.out.println(map.get("1"));
-        Assertions.assertTrue(map.get("1")==null);
-
-    }
-
-    @Test
     public void testSize() {
-        Assertions.assertEquals(0, channelEventService.size("test"));
+        Assertions.assertTrue( channelEventService.isEmpty("test"));
         ChannelEvent<ChannelPlayStatusChangeEventDetail> channelEvent = init();
         channelEventService.add("test", channelEvent);
-        Assertions.assertEquals(1, channelEventService.size("test"));
+        Assertions.assertFalse( channelEventService.isEmpty("test"));
         channelEventService.get("test");
-        Assertions.assertEquals(0, channelEventService.size("test"));
+        Assertions.assertTrue( channelEventService.isEmpty("test"));
     }
 
     @Test

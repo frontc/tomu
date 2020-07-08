@@ -72,8 +72,11 @@ public class ChannelController {
 
     //添加歌曲
     @PostMapping(value = "/{channelID}/song", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public SongView addSong(@PathVariable("channelID") @Validated int channelID, @Validated SongDTO songDTO) {
+    public SongView addSong(@PathVariable("channelID") @Validated int channelID,
+                            @Validated SongDTO songDTO,
+                            ServerWebExchange exchange) {
         return channelService.addSong(channelID,
+                TomuUtils.getToken(exchange),
                 songDTO.getSongName(),
                 songDTO.getArtistName(),
                 songDTO.getCoverUrl(),
@@ -115,7 +118,7 @@ public class ChannelController {
     //获取频道下的听众
     @GetMapping(value = "/{channelID}/audience")
     public List<String> getAudience(@PathVariable("channelID") @Validated int channelID) {
-        return onlineStatus.getAudience(channelID);
+        return onlineStatus.getAudienceWithNickName(channelID);
     }
 
     //听众从频道中退出

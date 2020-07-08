@@ -11,6 +11,7 @@ import cn.lefer.tomu.event.ChannelEvent;
 import cn.lefer.tomu.event.ChannelEventService;
 import cn.lefer.tomu.event.ChannelEventType;
 import cn.lefer.tomu.event.detail.AbstractChannelEventDetail;
+import cn.lefer.tomu.event.detail.AddSongEventDetail;
 import cn.lefer.tomu.event.detail.ChannelPlayStatusChangeEventDetail;
 import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
@@ -29,7 +30,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -93,6 +93,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public SongView addSong(int channelID,
+                            String token,
                             String songName,
                             String artistName,
                             String coverUrl,
@@ -101,8 +102,9 @@ public class ChannelServiceImpl implements ChannelService {
                             double songDuration,
                             SongSource songSource,
                             String songUrl) {
+        Date now = LeferDate.today();
         Song song = new Song();
-        song.setSongAddDate(LeferDate.today());
+        song.setSongAddDate(now);
         song.setMp3Url(mp3Url);
         song.setLrcUrl(lrcUrl);
         song.setCoverUrl(coverUrl);
@@ -114,7 +116,15 @@ public class ChannelServiceImpl implements ChannelService {
         song.setSongUrl(songUrl);
         song.setSongStatus(SongStatus.NORMAL);
         songMapper.insert(song);
-        return new SongView(song);
+        SongView songView = new SongView(song);
+        //将增加歌曲的事件推入广播
+        AddSongEventDetail detail = new AddSongEventDetail();
+        detail.setChannelID(channelID);
+        detail.setDate(now);
+        detail.setSongView(songView);
+        ChannelEvent.Builder<AddSongEventDetail> builder =  new ChannelEvent.Builder<>();
+        broadcast(channelID,token,builder.withType(ChannelEventType.ADD_SONG).withDetail(detail).build());
+        return songView;
     }
 
     @Override
@@ -175,18 +185,14 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public boolean changeChannelStatus(int channelID, int songID, double position, String token) {
         Date now = LeferDate.today();
-        //记入事件队列，准备对外广播
+        //记入事件队列，对外广播
         ChannelEvent.Builder<ChannelPlayStatusChangeEventDetail> builder = new ChannelEvent.Builder<>();
         ChannelPlayStatusChangeEventDetail detail = new ChannelPlayStatusChangeEventDetail();
         detail.setChannelID(channelID);
         detail.setDate(now);
         detail.setPosition(position);
         detail.setSongID(songID);
-        //查找同频道的其他用户
-        List<String> audience = onlineStatus.getAudience(channelID);
-        audience.stream()
-                .filter(aud -> !aud.equals(TomuUtils.getNickname(token)))
-                .forEach(aud -> channelEventService.add(aud, builder.withType(ChannelEventType.CHANGE_PLAY_STATUS).withDetail(detail).build()));
+        broadcast(channelID,token,builder.withType(ChannelEventType.CHANGE_PLAY_STATUS).withDetail(detail).build());
         //记入持久化队列，交由异步线程持久化
         PlayHistory playHistory = new PlayHistory();
         playHistory.setSongID(songID);
@@ -195,5 +201,16 @@ public class ChannelServiceImpl implements ChannelService {
         playHistory.setPlayDate(now);
         messagePool.getMessageProducer().onData("insert", PlayHistory.class.getName(), playHistory);
         return true;
+    }
+
+    /*
+    * 发布广播
+    * */
+    private void broadcast(int channelID,String currentToke,ChannelEvent<? extends AbstractChannelEventDetail> channelEvent){
+        List<String> audience = onlineStatus.getAudienceWithNickName(channelID);
+        String currentNickName = TomuUtils.getNickname(currentToke);
+        audience.stream()
+                .filter(aud -> !aud.equals(currentNickName))
+                .forEach(aud -> channelEventService.add(aud, channelEvent));
     }
 }

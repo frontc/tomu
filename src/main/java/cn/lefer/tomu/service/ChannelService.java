@@ -27,6 +27,7 @@ public interface ChannelService {
 
     //增加歌曲
     SongView addSong(int channelID,
+                     String token,
                      String songName,
                      String artistName,
                      String coverUrl,
