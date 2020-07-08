@@ -1,10 +1,7 @@
 package cn.lefer.tomu.event.detail;
 
-import java.util.Date;
-
 public class DeleteSongEventDetail extends AbstractChannelEventDetail{
     int songID;
-    Date date;
 
     public int getSongID() {
         return songID;
@@ -12,14 +9,6 @@ public class DeleteSongEventDetail extends AbstractChannelEventDetail{
 
     public void setSongID(int songID) {
         this.songID = songID;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     @Override

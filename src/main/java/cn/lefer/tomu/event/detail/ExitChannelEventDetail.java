@@ -1,10 +1,7 @@
 package cn.lefer.tomu.event.detail;
 
-import java.util.Date;
-
 public class ExitChannelEventDetail extends AbstractChannelEventDetail{
     String nickName;
-    Date date;
 
     public String getNickName() {
         return nickName;
@@ -12,14 +9,6 @@ public class ExitChannelEventDetail extends AbstractChannelEventDetail{
 
     public void setNickName(String nickName) {
         this.nickName = nickName;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     @Override

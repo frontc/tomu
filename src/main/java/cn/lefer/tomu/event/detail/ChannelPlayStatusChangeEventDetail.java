@@ -1,11 +1,8 @@
 package cn.lefer.tomu.event.detail;
 
-import java.util.Date;
-
 public class ChannelPlayStatusChangeEventDetail extends AbstractChannelEventDetail{
     int songID;
     double position;
-    Date date;
 
     public int getSongID() {
         return songID;
@@ -21,14 +18,6 @@ public class ChannelPlayStatusChangeEventDetail extends AbstractChannelEventDeta
 
     public void setPosition(double position) {
         this.position = position;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     @Override

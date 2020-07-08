@@ -1,6 +1,7 @@
 package cn.lefer.tomu.view;
 
 import cn.lefer.tomu.constant.SongSource;
+import cn.lefer.tomu.constant.SongStatus;
 import cn.lefer.tomu.entity.Song;
 
 /**
@@ -18,7 +19,15 @@ public class SongView {
     String coverUrl;
     String lrcUrl;
     String mp3Url;
+    SongStatus songStatus;
 
+    public SongStatus getSongStatus() {
+        return songStatus;
+    }
+
+    public void setSongStatus(SongStatus songStatus) {
+        this.songStatus = songStatus;
+    }
 
     public SongView(Song song) {
         this.songID = song.getSongID();
@@ -29,6 +38,7 @@ public class SongView {
         this.coverUrl = song.getCoverUrl();
         this.lrcUrl = song.getLrcUrl();
         this.mp3Url = song.getMp3Url();
+        this.songStatus=song.getSongStatus();
     }
 
     public int getSongID() {
@@ -106,6 +116,7 @@ public class SongView {
                 ", coverUrl='" + coverUrl + '\'' +
                 ", lrcUrl='" + lrcUrl + '\'' +
                 ", mp3Url='" + mp3Url + '\'' +
+                ", songStatus=" + songStatus +
                 '}';
     }
 }
