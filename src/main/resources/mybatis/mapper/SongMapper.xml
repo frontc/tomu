@@ -22,6 +22,15 @@
         values (#{songName}, #{songDuration}, #{artistName}, #{songSource}, #{songUrl}, #{mp3Url}, #{coverUrl},
                 #{lrcUrl}, #{songStatus}, #{channelID}, #{songAddDate})
     </insert>
+    <update id="batchUpdateSongStatus">
+        update T_SONG
+        set SONG_STATUS = #{songStatus}
+        where SONG_ID in
+        <foreach collection="songIDs" item="songID" open="(" separator="," close=")">
+            #{songID}
+        </foreach>
+    </update>
+
     <select id="selectByID" resultMap="SongResultMap">
         select *
         from T_SONG
