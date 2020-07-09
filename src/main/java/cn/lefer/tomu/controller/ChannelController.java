@@ -103,7 +103,7 @@ public class ChannelController {
     /*
      * 状态变化：用户切换歌曲
      */
-    @PostMapping(value = "/{channelID}/status")
+    @PostMapping(value = "/{channelID}/status", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public boolean changeChannelStatus(@PathVariable("channelID") @Validated int channelID,
                                        @Validated ChannelStatusDTO channelStatusDTO,
                                        ServerWebExchange exchange) {
@@ -113,7 +113,7 @@ public class ChannelController {
     /*
      * 推送事件到前端
      */
-    @GetMapping(value = "/{channelID}/status",consumes = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/{channelID}/status")
     public Flux<ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>>> getStatus(@PathVariable("channelID") @Validated int channelID,
                                                                                                @RequestParam @Validated String clientID) {
         return Flux.interval(Duration.ofMillis(500))
