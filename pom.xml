@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.lefer</groupId>
     <artifactId>tomu</artifactId>
-    <version>0.0.16</version>
+    <version>0.0.17</version>
     <name>tomu</name>
     <description>Listening to music together</description>
 

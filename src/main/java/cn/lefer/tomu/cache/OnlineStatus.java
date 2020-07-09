@@ -34,7 +34,7 @@ public class OnlineStatus {
      * 3.3如果本次用户标识符在记录时发现该频道已经有两个额外的标识符存在，踢出10分钟之内无活跃动作的标识符。
      * 3.4如果都在10分钟内有活跃，报频道已满，可由现在在线的用户手动踢掉一个
      * */
-    ConcurrentHashMap<Integer, HashMap<String, Date>> channelStatusMap;//频道里的访客
+    ConcurrentHashMap<Integer, ConcurrentHashMap<String, Date>> channelStatusMap;//频道里的访客
     ConcurrentHashMap<String, ChannelPlus> userStatusMap;//访客对应的频道，一个访客只能属于一个频道
 
     public OnlineStatus() {
@@ -71,7 +71,7 @@ public class OnlineStatus {
                 }
             }
         } else {//如果频道在缓存中不存在，直接新增
-            HashMap<String, Date> tokenDateMap = new HashMap<>();
+            ConcurrentHashMap<String, Date> tokenDateMap = new ConcurrentHashMap<>();
             tokenDateMap.put(token, date);
             channelStatusMap.put(channelID, tokenDateMap);
         }
