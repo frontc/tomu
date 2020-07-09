@@ -103,7 +103,7 @@ public class ChannelController {
     /*
      * 状态变化：用户切换歌曲
      */
-    @PostMapping(value = "/{channelID}/status", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "/{channelID}/status")
     public boolean changeChannelStatus(@PathVariable("channelID") @Validated int channelID,
                                        @Validated ChannelStatusDTO channelStatusDTO,
                                        ServerWebExchange exchange) {
