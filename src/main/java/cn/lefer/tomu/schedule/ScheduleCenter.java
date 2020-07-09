@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 @Component
 public class ScheduleCenter {
     private final SongMapper songMapper;
@@ -34,10 +36,9 @@ public class ScheduleCenter {
         songStatuses.add(SongStatus.NORMAL);
         songStatuses.add(SongStatus.OUTDATE);
         List<Song> songs = songMapper.selectAll(songStatuses);
-        Map<SongStatus,List<Song>> songStatusSongMap = songs.parallelStream().map(this::updateSongStatus).collect(Collectors.groupingBy(Song::getSongStatus));
+        Map<SongStatus,List<Integer>> songStatusSongMap = songs.parallelStream().map(this::updateSongStatus).collect(Collectors.groupingBy(Song::getSongStatus,Collectors.mapping(Song::getSongID,toList())));
         for(SongStatus songStatus :songStatusSongMap.keySet()){
-            List<Integer> songIDs= songStatusSongMap.get(songStatus).stream().map(Song::getSongID).collect(Collectors.toList());
-            int rows = songMapper.batchUpdateSongStatus(songStatus,songIDs);
+            int rows = songMapper.batchUpdateSongStatus(songStatus,songStatusSongMap.get(songStatus));
             log.info("歌曲状态刷新："+songStatus+"-"+rows+"行.");
         }
         log.info("刷新歌曲状态结束.");
