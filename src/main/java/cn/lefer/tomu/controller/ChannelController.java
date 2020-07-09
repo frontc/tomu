@@ -113,13 +113,12 @@ public class ChannelController {
     /*
      * 推送事件到前端
      */
-    @GetMapping(value = "/{channelID}/status")
+    @GetMapping(value = "/{channelID}/status",consumes = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>>> getStatus(@PathVariable("channelID") @Validated int channelID,
                                                                                                @RequestParam @Validated String clientID) {
-        return Flux.interval(Duration.ofSeconds(1))
-                .filter(l -> channelService.hasNewsInChannel(channelID, clientID))
-                .map(seq -> Tuples.of(seq, ThreadLocalRandom.current().nextInt()))
-                .map(data -> channelService.getChannelEvent(channelID, clientID, Long.toString(data.getT1())));
+        return Flux.interval(Duration.ofMillis(500))
+                .filter(seq -> channelService.hasNewsInChannel(channelID, clientID))
+                .map(seq -> channelService.getChannelEvent(channelID, clientID, Long.toString(seq)));
     }
 
     //获取频道下的听众
