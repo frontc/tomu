@@ -32,4 +32,6 @@ public interface SongMapper {
     int batchUpdateSongStatus(@Param("songStatus") SongStatus songStatus,@Param("songIDs") List<Integer> songIDs);
 
     List<Song> selectAll(@Param("songStatusList") List<SongStatus> songStatusList);
+
+    int countByChannelIDAndMP3Url(@Param("channelID") int channelID,@Param("songStatusList") List<SongStatus> songStatusList,@Param("mp3Url") String url);
 }

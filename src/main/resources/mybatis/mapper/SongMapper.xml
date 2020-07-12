@@ -37,6 +37,16 @@
         where SONG_ID = #{songID}
     </select>
 
+    <select id="countByChannelIDAndMP3Url" resultType="INTEGER">
+        select count(SONG_ID)
+        from T_SONG
+        where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
+            #{songStatus}
+        </foreach>
+        and MP3_URL=#{mp3Url}
+    </select>
+
     <select id="selectAll" resultMap="SongResultMap">
         select *
         from T_SONG

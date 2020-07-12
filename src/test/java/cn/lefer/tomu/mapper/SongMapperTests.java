@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -24,6 +25,8 @@ import java.util.List;
 public class SongMapperTests {
     @Autowired
     private SongMapper songMapper;
+    private final static List<SongStatus> DEFAULT_SONG_STATUS_LIST = Arrays.asList(SongStatus.NORMAL,SongStatus.OUTDATE);
+
 
     @Test
     public void testInsert() {
@@ -48,22 +51,24 @@ public class SongMapperTests {
 
     @Test
     public void testSelectByChannelID() {
-        List<SongStatus> songStatusList = new ArrayList<>();
-        songStatusList.add(SongStatus.NORMAL);
-        songStatusList.add(SongStatus.OUTDATE);
-        List<Song> songs = songMapper.selectByChannelID(1, songStatusList, 2, 1);
+        List<Song> songs = songMapper.selectByChannelID(1, DEFAULT_SONG_STATUS_LIST, 2, 1);
         System.out.println(songs);
         Assertions.assertTrue(songs.size() > 0);
     }
 
     @Test
     public void testCountByChannelID() {
-        List<SongStatus> songStatusList = new ArrayList<>();
-        songStatusList.add(SongStatus.NORMAL);
-        songStatusList.add(SongStatus.OUTDATE);
-        int total = songMapper.countByChannelID(1, songStatusList);
+        int total = songMapper.countByChannelID(1, DEFAULT_SONG_STATUS_LIST);
         System.out.println(total);
         Assertions.assertTrue(total >= 0);
+    }
+
+    @Test
+    public void testCountByChannelIDAndMP3Url(){
+        Song song = initSong();
+        songMapper.insert(song);
+        int counts = songMapper.countByChannelIDAndMP3Url(1,DEFAULT_SONG_STATUS_LIST,song.getMp3Url());
+        Assertions.assertTrue(counts>=1);
     }
 
     private Song initSong() {

@@ -21,6 +21,11 @@ public class BizError {
                 .withType("ERROR")
                 .withMessage("This Channel Is Not Exits.")
                 .build());
+        put(BizErrorCode.REPEATED_SONG, new ErrorResponse.ErrorResponseBuilder()
+                .withCode("4002")
+                .withType("ERROR")
+                .withMessage("This Song Is Already Exits.")
+                .build());
         put(BizErrorCode.NO_TOKEN, new ErrorResponse.ErrorResponseBuilder()
                 .withCode("4030")
                 .withType("ERROR")

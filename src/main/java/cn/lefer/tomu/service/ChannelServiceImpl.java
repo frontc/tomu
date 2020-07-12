@@ -10,6 +10,8 @@ import cn.lefer.tomu.event.ChannelEvent;
 import cn.lefer.tomu.event.ChannelEventService;
 import cn.lefer.tomu.event.ChannelEventType;
 import cn.lefer.tomu.event.detail.*;
+import cn.lefer.tomu.exception.BizErrorCode;
+import cn.lefer.tomu.exception.BizRestException;
 import cn.lefer.tomu.mapper.ChannelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -105,6 +108,9 @@ public class ChannelServiceImpl implements ChannelService {
                             SongSource songSource,
                             String songUrl){
         Date now = LeferDate.today();
+        if(songMapper.countByChannelIDAndMP3Url(channelID, Arrays.asList(SongStatus.NORMAL,SongStatus.OUTDATE),mp3Url)>0){
+            throw new BizRestException(BizErrorCode.REPEATED_SONG);
+        }
         Song song = new Song();
         song.setSongAddDate(now);
         song.setMp3Url(mp3Url);
