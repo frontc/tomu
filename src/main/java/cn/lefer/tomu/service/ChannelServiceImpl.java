@@ -106,8 +106,13 @@ public class ChannelServiceImpl implements ChannelService {
                             String mp3Url,
                             double songDuration,
                             SongSource songSource,
-                            String songUrl){
+                            String songUrl) throws IOException {
         Date now = LeferDate.today();
+        //先判断歌真不真
+        if(!LeferNet.isValid(mp3Url)) throw new BizRestException(BizErrorCode.URL_TEST_FAILED);
+        //再判断歌在不在
+        
+        //再判断关系在不在
         if(songMapper.countByChannelIDAndMP3Url(channelID, Arrays.asList(SongStatus.NORMAL,SongStatus.OUTDATE),mp3Url)>0){
             throw new BizRestException(BizErrorCode.REPEATED_SONG);
         }

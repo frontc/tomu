@@ -27,6 +27,8 @@ public interface SongMapper {
 
     int countByChannelID(@Param("channelID") int channelID, @Param("songStatusList") List<SongStatus> songStatusList);
 
+    //改用ChannelSongRelMapper.delete()
+    @Deprecated
     int deleteByID(@Param("songID") int songID);
 
     int batchUpdateSongStatus(@Param("songStatus") SongStatus songStatus,@Param("songIDs") List<Integer> songIDs);

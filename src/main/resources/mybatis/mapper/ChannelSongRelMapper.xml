@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lefer.tomu.mapper.SongMapper">
+    <insert id="insert" parameterType="cn.lefer.tomu.entity.ChannelSongRel" useGeneratedKeys="true" keyProperty="channelSongRelID">
+        insert into T_CHANNEL_SONG(CHANNEL_ID, SONG_ID, ADD_DATE, VALID_FLAG)
+        values (#{channelID}, #{songID}, #{addDate}, #{validFlag})
+    </insert>
+    <update id="delete">
+        update T_CHANNEL_SONG
+        set VALID_FLAG = 0
+        where CHANNEL_ID = #{channelID} and SONG_ID = #{songID}
+    </update>
+</mapper>

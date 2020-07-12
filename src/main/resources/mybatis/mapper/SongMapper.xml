@@ -12,16 +12,16 @@
         <result column="cover_url" jdbcType="VARCHAR" property="coverUrl"/>
         <result column="lrc_url" jdbcType="VARCHAR" property="lrcUrl"/>
         <result column="song_status" jdbcType="VARCHAR" property="songStatus"/>
-        <result column="channel_id" jdbcType="INTEGER" property="channelID"/>
         <result column="song_add_date" jdbcType="DATE" property="songAddDate"/>
     </resultMap>
 
     <insert id="insert" parameterType="cn.lefer.tomu.entity.Song" useGeneratedKeys="true" keyProperty="songID">
         insert into T_SONG(SONG_NAME, SONG_DURATION, ARTIST_NAME, SONG_SOURCE, SONG_URL, MP3_URL, COVER_URL, LRC_URL,
-                           SONG_STATUS, CHANNEL_ID, SONG_ADD_DATE)
+                           SONG_STATUS, SONG_ADD_DATE)
         values (#{songName}, #{songDuration}, #{artistName}, #{songSource}, #{songUrl}, #{mp3Url}, #{coverUrl},
-                #{lrcUrl}, #{songStatus}, #{channelID}, #{songAddDate})
+                #{lrcUrl}, #{songStatus}, #{songAddDate})
     </insert>
+
     <update id="batchUpdateSongStatus">
         update T_SONG
         set SONG_STATUS = #{songStatus}
@@ -38,13 +38,13 @@
     </select>
 
     <select id="countByChannelIDAndMP3Url" resultType="INTEGER">
-        select count(SONG_ID)
-        from T_SONG
-        where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        select count(a.SONG_ID)
+        from T_SONG a, T_CHANNEL_SONG b
+        where b.CHANNEL_ID=#{channelID} and a.SONG_STATUS in
         <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
             #{songStatus}
         </foreach>
-        and MP3_URL=#{mp3Url}
+        and a.MP3_URL=#{mp3Url}
     </select>
 
     <select id="selectAll" resultMap="SongResultMap">
@@ -61,24 +61,29 @@
         from T_SONG
         where SONG_ID = #{songID}
     </delete>
+
     <select id="selectByChannelID" resultMap="SongResultMap">
-        select * from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        select a.* from T_SONG a, T_CHANNEL_SONG b where b.CHANNEL_ID=#{channelID} and a.SONG_STATUS in
         <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
             #{songStatus}
         </foreach>
+        and a.SONG_ID=b.SONG_ID
         limit #{pageSize} offset (#{pageNum}-1)*#{pageSize}
     </select>
+
     <select id="countByChannelID" resultType="INTEGER">
-        select count(1) from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        select count(1) from T_SONG a, T_CHANNEL_SONG b where b.CHANNEL_ID=#{channelID} and a.SONG_STATUS in
         <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
             #{songStatus}
         </foreach>
+        and a.SONG_ID=b.SONG_ID
     </select>
 
     <select id="selectAllByChannelID" resultMap="SongResultMap">
-        select * from T_SONG where CHANNEL_ID=#{channelID} and SONG_STATUS in
+        select a.* from T_SONG a, T_CHANNEL_SONG b where b.CHANNEL_ID=#{channelID} and a.SONG_STATUS in
         <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
             #{songStatus}
         </foreach>
+        and a.SONG_ID=b.SONG_ID
     </select>
 </mapper>

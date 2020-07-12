@@ -36,7 +36,7 @@ public interface ChannelService {
                      String mp3Url,
                      double songDuration,
                      SongSource songSource,
-                     String songUrl);
+                     String songUrl) throws IOException;
 
     //删除歌曲
     boolean deleteSong(int channelID, int songID, String token);
