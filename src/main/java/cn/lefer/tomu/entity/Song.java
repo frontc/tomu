@@ -13,7 +13,6 @@ import java.util.Date;
  */
 public class Song {
     int songID;//歌曲ID
-    int channelID;//频道ID
     String songName;//歌曲名称
     String artistName;//歌手名称
     String coverUrl;//封面URL
@@ -31,14 +30,6 @@ public class Song {
 
     public void setSongID(int songID) {
         this.songID = songID;
-    }
-
-    public int getChannelID() {
-        return channelID;
-    }
-
-    public void setChannelID(int channelID) {
-        this.channelID = channelID;
     }
 
     public String getSongName() {
@@ -125,7 +116,6 @@ public class Song {
     public String toString() {
         return "Song{" +
                 "songID=" + songID +
-                ", channelID=" + channelID +
                 ", songName='" + songName + '\'' +
                 ", artistName='" + artistName + '\'' +
                 ", coverUrl='" + coverUrl + '\'' +
@@ -134,7 +124,7 @@ public class Song {
                 ", songDuration=" + songDuration +
                 ", songSource=" + songSource +
                 ", songUrl='" + songUrl + '\'' +
-                ", songStatus='" + songStatus + '\'' +
+                ", songStatus=" + songStatus +
                 ", songAddDate=" + songAddDate +
                 '}';
     }

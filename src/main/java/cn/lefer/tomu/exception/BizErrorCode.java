@@ -9,6 +9,7 @@ package cn.lefer.tomu.exception;
 public enum BizErrorCode {
     CHANNEL_IS_FULL,//4000
     CHANNEL_NOT_EXISTS,//4001
+    REPEATED_SONG,//4002
     NO_TOKEN,//4030
     INVALID_TOKEN,//4031
     PERSISTENCE_FAILED,//5000

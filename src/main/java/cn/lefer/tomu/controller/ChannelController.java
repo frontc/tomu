@@ -113,7 +113,8 @@ public class ChannelController {
     /*
      * 推送事件到前端
      */
-    @GetMapping(value = "/{channelID}/status")
+    //这里需要考虑内存溢出问题
+    @GetMapping(value = "/{channelID}/status",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>>> getStatus(@PathVariable("channelID") @Validated int channelID,
                                                                                                @RequestParam @Validated String clientID) {
         return Flux.interval(Duration.ofMillis(500))
