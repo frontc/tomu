@@ -13,6 +13,7 @@ import cn.lefer.tomu.event.detail.*;
 import cn.lefer.tomu.exception.BizErrorCode;
 import cn.lefer.tomu.exception.BizRestException;
 import cn.lefer.tomu.mapper.ChannelMapper;
+import cn.lefer.tomu.mapper.ChannelSongRelMapper;
 import cn.lefer.tomu.mapper.PlayHistoryMapper;
 import cn.lefer.tomu.mapper.SongMapper;
 import cn.lefer.tomu.queue.MessagePool;
@@ -48,9 +49,11 @@ public class ChannelServiceImpl implements ChannelService {
     private final MessagePool messagePool;
     private final List<SongStatus> defaultSongStatusList;
     private final OnlineStatus onlineStatus;
+    private final ChannelSongRelMapper channelSongRelMapper;
 
     @Autowired
     public ChannelServiceImpl(ChannelMapper channelMapper,
+                              ChannelSongRelMapper channelSongRelMapper,
                               PlayHistoryMapper playHistoryMapper,
                               SongMapper songMapper,
                               OnlineStatus onlineStatus,
@@ -61,6 +64,7 @@ public class ChannelServiceImpl implements ChannelService {
         songStatusList.add(SongStatus.OUTDATE);
         this.defaultSongStatusList = songStatusList;
         this.channelMapper = channelMapper;
+        this.channelSongRelMapper=channelSongRelMapper;
         this.playHistoryMapper = playHistoryMapper;
         this.songMapper = songMapper;
         this.channelEventService = channelEventService;
@@ -111,8 +115,18 @@ public class ChannelServiceImpl implements ChannelService {
         //先判断歌真不真
         if(!LeferNet.isValid(mp3Url)) throw new BizRestException(BizErrorCode.URL_TEST_FAILED);
         //再判断歌在不在
-        
-        //再判断关系在不在
+        Song previosSong = songMapper.selectBySongNameAndArtistNameOrMP3Url(songName,artistName,mp3Url);
+        if(previosSong!=null){
+            //再判断关系在不在
+            int count = channelSongRelMapper.existsRelWithChannelIDAndSongID(channelID,previosSong.getSongID());
+            //关系不在，建关系
+            //todo
+            //关系在，报重复
+        }else{
+            //歌不在，歌曲+关系
+
+        }
+
         if(songMapper.countByChannelIDAndMP3Url(channelID, Arrays.asList(SongStatus.NORMAL,SongStatus.OUTDATE),mp3Url)>0){
             throw new BizRestException(BizErrorCode.REPEATED_SONG);
         }

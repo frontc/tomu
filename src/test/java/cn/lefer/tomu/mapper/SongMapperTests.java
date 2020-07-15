@@ -44,9 +44,9 @@ public class SongMapperTests {
 
     @Test
     public void testSelectByID() {
-        Song song = songMapper.selectByID(2);
-        System.out.println(song);
-        Assertions.assertNotNull(song);
+        Song song = initSong();
+        Song s = songMapper.selectByID(song.getSongID());
+        Assertions.assertNotNull(s);
     }
 
     @Test
@@ -77,7 +77,6 @@ public class SongMapperTests {
         song.setSongSource(SongSource.netease);
         song.setSongName("Car Park");
         song.setSongDuration(180);
-        song.setChannelID(1);
         song.setArtistName("Fenne Lily");
         song.setCoverUrl("https://api.i-meto.com/meting/api?server=netease&type=pic&id=109951163105662267&auth=67845de5ba4fff4a715c495ed9f31a9b72ad545b");
         song.setLrcUrl("https://api.i-meto.com/meting/api?server=netease&type=lrc&id=340383&auth=620e461301fd513c8dd0b766bbea22d51f912850");

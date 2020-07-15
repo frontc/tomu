@@ -16,4 +16,5 @@ import org.springframework.stereotype.Repository;
 public interface ChannelSongRelMapper {
     int insert(ChannelSongRel channelSongRel);
     int delete(@Param("channelID") int channelID, @Param("songID") long songID);
+    int existsRelWithChannelIDAndSongID(@Param("channelID") int channelID, @Param("songID") long songID);
 }

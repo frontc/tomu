@@ -37,6 +37,13 @@
         where SONG_ID = #{songID}
     </select>
 
+    <select id="selectBySongNameAndArtistNameOrMP3Url" resultMap="SongResultMap">
+        select *
+        from T_SONG
+        where (SONG_NAME = #{songName} and ARTIST_NAME = #{artistName}) or MP3_URL = #{mp3Url}
+        limit 1
+    </select>
+
     <select id="countByChannelIDAndMP3Url" resultType="INTEGER">
         select count(a.SONG_ID)
         from T_SONG a, T_CHANNEL_SONG b
