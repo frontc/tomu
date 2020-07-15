@@ -50,4 +50,12 @@ public class ChannelEvent<T> {
             return new ChannelEvent<T>(this);
         }
     }
+
+    @Override
+    public String toString() {
+        return "ChannelEvent{" +
+                "type=" + type +
+                ", detail=" + detail +
+                '}';
+    }
 }

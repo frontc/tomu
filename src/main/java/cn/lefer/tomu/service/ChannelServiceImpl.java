@@ -24,6 +24,8 @@ import cn.lefer.tomu.view.Page;
 import cn.lefer.tomu.view.SongView;
 import cn.lefer.tools.Date.LeferDate;
 import cn.lefer.tools.Net.LeferNet;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,7 @@ public class ChannelServiceImpl implements ChannelService {
     private final List<SongStatus> defaultSongStatusList;
     private final OnlineStatus onlineStatus;
     private final ChannelSongRelMapper channelSongRelMapper;
+    private final Log log = LogFactory.getLog(this.getClass());
 
     @Autowired
     public ChannelServiceImpl(ChannelMapper channelMapper,
@@ -190,12 +193,12 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>> getChannelEvent(int channelID, String token, String seq) {
         ChannelEvent<? extends AbstractChannelEventDetail> channelEvent = channelEventService.get(TomuUtils.getNickname(token));
+        log.debug("向频道["+channelID+"],推送事件:"+channelEvent);
         return ServerSentEvent.<ChannelEvent<? extends AbstractChannelEventDetail>>builder()
                 .event(channelEvent.getType().toString())
                 .id(seq)
                 .data(channelEvent)
                 .build();
-
     }
 
 

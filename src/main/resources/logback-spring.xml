@@ -75,7 +75,7 @@
     <logger name="cn.lefer.tomu.filter" level="debug"/>
     <!-- debug下打印 sql -->
     <logger name="cn.lefer.tomu.mapper" level="debug"/>
-
+    <logger name="cn.lefer.tomu.service" level="debug"/>
     <!--
         root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性
         level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，
