@@ -132,6 +132,14 @@ public class ChannelController {
         return channelService.exit(channelID, TomuUtils.getToken(exchange));
     }
 
+    //听众被踢出
+    @RequestMapping(value = "/{channelID}/audience/{nickName}", method = RequestMethod.DELETE)
+    public boolean kickOthers(@PathVariable("channelID") @Validated int channelID,
+                              @PathVariable("nickName") String nickName) {
+        return channelService.kick(channelID, nickName);
+    }
+
+
     @Autowired
     public void setChannelService(ChannelService channelService) {
         this.channelService = channelService;

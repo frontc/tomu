@@ -29,10 +29,7 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -234,6 +231,17 @@ public class ChannelServiceImpl implements ChannelService {
         channelEventService.broadcast(channelID, token, builder.withType(ChannelEventType.AUDIENCE_OUT).withDetail(detail).build());
         onlineStatus.exit(token, channelID);
         return true;
+    }
+
+    @Override
+    public boolean kick(int channelID, String nickName) {
+        Optional<String> toKick = onlineStatus.getAudienceWithFullName(channelID).stream().filter(fullName->TomuUtils.getNickname(fullName).equals(nickName)).findFirst();
+        if(toKick.isPresent()){
+            onlineStatus.exit(toKick.get(), channelID);
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override

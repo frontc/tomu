@@ -62,7 +62,7 @@ public interface ChannelService {
 
     //用户退出
     boolean exit(int channelID, String token);
-
+    boolean kick(int channelID, String nickName);
     //获取频道下的听众
     List<String> getAudienceWithNickName(int channelID);
 }
