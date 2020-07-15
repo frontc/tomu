@@ -15,6 +15,13 @@ public class ChannelSongRel {
     Date addDate;
     boolean validFlag;
 
+    public ChannelSongRel(int channelID, long songID, Date addDate, boolean validFlag) {
+        this.channelID = channelID;
+        this.songID = songID;
+        this.addDate = addDate;
+        this.validFlag = validFlag;
+    }
+
     public boolean isValidFlag() {
         return validFlag;
     }

@@ -35,12 +35,6 @@ public class SongMapperTests {
         Assertions.assertTrue(song.getSongID() > 0);
     }
 
-    @Test
-    public void testDelete() {
-        Song song = initSong();
-        songMapper.insert(song);
-        Assertions.assertEquals(1, songMapper.deleteByID(song.getSongID()));
-    }
 
     @Test
     public void testSelectByID() {

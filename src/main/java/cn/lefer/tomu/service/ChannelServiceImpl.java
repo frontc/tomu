@@ -4,6 +4,7 @@ import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.constant.SongStatus;
 import cn.lefer.tomu.entity.Channel;
+import cn.lefer.tomu.entity.ChannelSongRel;
 import cn.lefer.tomu.entity.PlayHistory;
 import cn.lefer.tomu.entity.Song;
 import cn.lefer.tomu.event.ChannelEvent;
@@ -115,35 +116,31 @@ public class ChannelServiceImpl implements ChannelService {
         //先判断歌真不真
         if(!LeferNet.isValid(mp3Url)) throw new BizRestException(BizErrorCode.URL_TEST_FAILED);
         //再判断歌在不在
-        Song previosSong = songMapper.selectBySongNameAndArtistNameOrMP3Url(songName,artistName,mp3Url);
-        if(previosSong!=null){
-            //再判断关系在不在
-            int count = channelSongRelMapper.existsRelWithChannelIDAndSongID(channelID,previosSong.getSongID());
-            //关系不在，建关系
-            //todo
-            //关系在，报重复
+        Song song = songMapper.selectBySongNameAndArtistNameOrMP3Url(songName,artistName,mp3Url);
+        if(song==null){
+            song = new Song();
+            song.setSongAddDate(now);
+            song.setMp3Url(mp3Url);
+            song.setLrcUrl(lrcUrl);
+            song.setCoverUrl(coverUrl);
+            song.setArtistName(artistName);
+            song.setSongDuration(songDuration);
+            song.setSongName(songName);
+            song.setSongSource(songSource);
+            song.setSongUrl(songUrl);
+            song.setSongStatus(SongStatus.NORMAL);
+            songMapper.insert(song);
         }else{
-            //歌不在，歌曲+关系
-
+            //再判断关系在不在
+            int count = channelSongRelMapper.existsRelWithChannelIDAndSongID(channelID,song.getSongID());
+            //关系不在，建关系,关系在，报重复
+            if(count>0){
+                throw new BizRestException(BizErrorCode.REPEATED_SONG);
+            }else{
+                channelSongRelMapper.insert(new ChannelSongRel(channelID,song.getSongID(),now,true));
+            }
         }
-
-        if(songMapper.countByChannelIDAndMP3Url(channelID, Arrays.asList(SongStatus.NORMAL,SongStatus.OUTDATE),mp3Url)>0){
-            throw new BizRestException(BizErrorCode.REPEATED_SONG);
-        }
-        Song song = new Song();
-        song.setSongAddDate(now);
-        song.setMp3Url(mp3Url);
-        song.setLrcUrl(lrcUrl);
-        song.setCoverUrl(coverUrl);
-        song.setArtistName(artistName);
-        song.setChannelID(channelID);
-        song.setSongDuration(songDuration);
-        song.setSongName(songName);
-        song.setSongSource(songSource);
-        song.setSongUrl(songUrl);
-        song.setSongStatus(SongStatus.NORMAL);
-        songMapper.insert(song);
-        SongView songView = new SongView(song);
+        SongView songView= new SongView(song);
         //将增加歌曲的事件推入广播
         AddSongEventDetail detail = new AddSongEventDetail();
         detail.setChannelID(channelID);
@@ -156,7 +153,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public boolean deleteSong(int channelID, int songID, String token) {
-        songMapper.deleteByID(songID);
+        channelSongRelMapper.delete(channelID,songID);
         //将删除歌曲的事件推入广播
         DeleteSongEventDetail detail = new DeleteSongEventDetail();
         detail.setSongID(songID);

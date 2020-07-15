@@ -74,7 +74,7 @@
         <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
             #{songStatus}
         </foreach>
-        and a.SONG_ID=b.SONG_ID
+        and a.SONG_ID=b.SONG_ID order by b.ID
         limit #{pageSize} offset (#{pageNum}-1)*#{pageSize}
     </select>
 
@@ -91,6 +91,6 @@
         <foreach collection="songStatusList" item="songStatus" open="(" separator="," close=")">
             #{songStatus}
         </foreach>
-        and a.SONG_ID=b.SONG_ID
+        and a.SONG_ID=b.SONG_ID order by b.ID
     </select>
 </mapper>

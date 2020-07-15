@@ -12,10 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -24,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 public class ScheduleCenter {
     private final SongMapper songMapper;
     private final Log log = LogFactory.getLog(this.getClass());
+    private final static List<SongStatus> DEFAULT_SONG_STATUS_LIST = Arrays.asList(SongStatus.NORMAL,SongStatus.OUTDATE);
     @Autowired
     public ScheduleCenter(SongMapper songMapper){
         this.songMapper=songMapper;
@@ -32,10 +30,7 @@ public class ScheduleCenter {
     @Scheduled(cron = "0 0 3 * * ?")
     public void mp3Check(){
         log.info("开始刷新歌曲状态...");
-        List<SongStatus> songStatuses = new ArrayList<>();
-        songStatuses.add(SongStatus.NORMAL);
-        songStatuses.add(SongStatus.OUTDATE);
-        List<Song> songs = songMapper.selectAll(songStatuses);
+        List<Song> songs = songMapper.selectAll(DEFAULT_SONG_STATUS_LIST);
         Map<SongStatus,List<Integer>> songStatusSongMap = songs.parallelStream().map(this::updateSongStatus).collect(Collectors.groupingBy(Song::getSongStatus,Collectors.mapping(Song::getSongID,toList())));
         for(SongStatus songStatus :songStatusSongMap.keySet()){
             int rows = songMapper.batchUpdateSongStatus(songStatus,songStatusSongMap.get(songStatus));
@@ -52,7 +47,7 @@ public class ScheduleCenter {
                 song.setSongStatus(SongStatus.OUTDATE);
             }
         }catch (IOException e){
-            e.printStackTrace();
+            log.error("定时校验歌曲状态出错:"+e.getMessage());
         }
         return song;
     }
