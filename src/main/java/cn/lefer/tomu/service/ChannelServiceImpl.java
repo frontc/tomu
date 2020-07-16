@@ -130,15 +130,14 @@ public class ChannelServiceImpl implements ChannelService {
             song.setSongUrl(songUrl);
             song.setSongStatus(SongStatus.NORMAL);
             songMapper.insert(song);
+        }
+        //再判断关系在不在
+        int count = channelSongRelMapper.existsRelWithChannelIDAndSongID(channelID,song.getSongID());
+        //关系不在，建关系,关系在，报重复
+        if(count>0){
+            throw new BizRestException(BizErrorCode.REPEATED_SONG);
         }else{
-            //再判断关系在不在
-            int count = channelSongRelMapper.existsRelWithChannelIDAndSongID(channelID,song.getSongID());
-            //关系不在，建关系,关系在，报重复
-            if(count>0){
-                throw new BizRestException(BizErrorCode.REPEATED_SONG);
-            }else{
-                channelSongRelMapper.insert(new ChannelSongRel(channelID,song.getSongID(),now,true));
-            }
+            channelSongRelMapper.insert(new ChannelSongRel(channelID,song.getSongID(),now,true));
         }
         SongView songView= new SongView(song);
         //将增加歌曲的事件推入广播
