@@ -93,4 +93,8 @@
         </foreach>
         and a.SONG_ID=b.SONG_ID order by b.ID
     </select>
+
+    <select id="randomSelect" resultMap="SongResultMap">
+        select * from T_SONG where SONG_STATUS=#{songStatus} order by random() limit #{size}
+    </select>
 </mapper>

@@ -3,6 +3,7 @@ package cn.lefer.tomu.service;
 import cn.lefer.tomu.cache.OnlineStatus;
 import cn.lefer.tomu.constant.SongSource;
 import cn.lefer.tomu.constant.SongStatus;
+import cn.lefer.tomu.dto.PlayHistoryDTO;
 import cn.lefer.tomu.entity.Channel;
 import cn.lefer.tomu.entity.ChannelSongRel;
 import cn.lefer.tomu.entity.PlayHistory;
@@ -27,11 +28,15 @@ import cn.lefer.tools.Net.LeferNet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +57,9 @@ public class ChannelServiceImpl implements ChannelService {
     private final ChannelSongRelMapper channelSongRelMapper;
     private final Log log = LogFactory.getLog(this.getClass());
 
+    @Value("${tomu.random.size}")
+    int RANDOM_SIZE;
+
     @Autowired
     public ChannelServiceImpl(ChannelMapper channelMapper,
                               ChannelSongRelMapper channelSongRelMapper,
@@ -65,7 +73,7 @@ public class ChannelServiceImpl implements ChannelService {
         songStatusList.add(SongStatus.OUTDATE);
         this.defaultSongStatusList = songStatusList;
         this.channelMapper = channelMapper;
-        this.channelSongRelMapper=channelSongRelMapper;
+        this.channelSongRelMapper = channelSongRelMapper;
         this.playHistoryMapper = playHistoryMapper;
         this.songMapper = songMapper;
         this.channelEventService = channelEventService;
@@ -114,10 +122,10 @@ public class ChannelServiceImpl implements ChannelService {
                             String songUrl) throws IOException {
         Date now = LeferDate.today();
         //先判断歌真不真
-        if(!LeferNet.isValid(mp3Url)) throw new BizRestException(BizErrorCode.URL_TEST_FAILED);
+        if (!LeferNet.isValid(mp3Url)) throw new BizRestException(BizErrorCode.URL_TEST_FAILED);
         //再判断歌在不在
-        Song song = songMapper.selectBySongNameAndArtistNameOrMP3Url(songName,artistName,mp3Url);
-        if(song==null){
+        Song song = songMapper.selectBySongNameAndArtistNameOrMP3Url(songName, artistName, mp3Url);
+        if (song == null) {
             song = new Song();
             song.setSongAddDate(now);
             song.setMp3Url(mp3Url);
@@ -132,14 +140,14 @@ public class ChannelServiceImpl implements ChannelService {
             songMapper.insert(song);
         }
         //再判断关系在不在
-        int count = channelSongRelMapper.existsRelWithChannelIDAndSongID(channelID,song.getSongID());
+        int count = channelSongRelMapper.existsRelWithChannelIDAndSongID(channelID, song.getSongID());
         //关系不在，建关系,关系在，报重复
-        if(count>0){
+        if (count > 0) {
             throw new BizRestException(BizErrorCode.REPEATED_SONG);
-        }else{
-            channelSongRelMapper.insert(new ChannelSongRel(channelID,song.getSongID(),now,true));
+        } else {
+            channelSongRelMapper.insert(new ChannelSongRel(channelID, song.getSongID(), now, true));
         }
-        SongView songView= new SongView(song);
+        SongView songView = new SongView(song);
         //将增加歌曲的事件推入广播
         AddSongEventDetail detail = new AddSongEventDetail();
         detail.setChannelID(channelID);
@@ -152,7 +160,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public boolean deleteSong(int channelID, int songID, String token) {
-        channelSongRelMapper.delete(channelID,songID);
+        channelSongRelMapper.delete(channelID, songID);
         //将删除歌曲的事件推入广播
         DeleteSongEventDetail detail = new DeleteSongEventDetail();
         detail.setSongID(songID);
@@ -183,6 +191,21 @@ public class ChannelServiceImpl implements ChannelService {
         return songs.stream().map(SongView::new).collect(Collectors.toList());
     }
 
+    @Override
+    public List<SongView> getRandomSongs() {
+        List<Song> songs = songMapper.randomSelect(SongStatus.NORMAL, RANDOM_SIZE);
+        return songs.stream().map(SongView::new).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public Page<PlayHistoryDTO> getPlayHistory(int channelID, int pageNum, int pageSize) {
+        List<PlayHistoryDTO> playHistoryDTOList = playHistoryMapper.selectByChannelID(channelID, pageNum, pageSize);
+        int total = playHistoryMapper.countByChannelID(channelID);
+        Page.Builder<PlayHistoryDTO> pageBuilder = new Page.Builder<>();
+        return pageBuilder.pageNum(pageNum).pageSize(pageSize).total(total).data(playHistoryDTOList).build();
+    }
+
 
     @Override
     public boolean hasNewsInChannel(int channelID, String token) {
@@ -192,7 +215,7 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public ServerSentEvent<ChannelEvent<? extends AbstractChannelEventDetail>> getChannelEvent(int channelID, String token, String seq) {
         ChannelEvent<? extends AbstractChannelEventDetail> channelEvent = channelEventService.get(TomuUtils.getNickname(token));
-        log.debug("向频道["+channelID+"],推送事件:"+channelEvent);
+        log.debug("向频道[" + channelID + "],推送事件:" + channelEvent);
         return ServerSentEvent.<ChannelEvent<? extends AbstractChannelEventDetail>>builder()
                 .event(channelEvent.getType().toString())
                 .id(seq)
@@ -237,11 +260,11 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public boolean kick(int channelID, String nickName) {
-        Optional<String> toKick = onlineStatus.getAudienceWithFullName(channelID).stream().filter(fullName->TomuUtils.getNickname(fullName).equals(nickName)).findFirst();
-        if(toKick.isPresent()){
+        Optional<String> toKick = onlineStatus.getAudienceWithFullName(channelID).stream().filter(fullName -> TomuUtils.getNickname(fullName).equals(nickName)).findFirst();
+        if (toKick.isPresent()) {
             onlineStatus.exit(toKick.get(), channelID);
             return true;
-        }else{
+        } else {
             return false;
         }
     }

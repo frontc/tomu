@@ -9,6 +9,19 @@
         <result column="play_date" jdbcType="DATE" property="playDate"/>
     </resultMap>
 
+    <resultMap id="PlayHistoryMap" type="cn.lefer.tomu.dto.PlayHistoryDTO">
+        <id column="song_id" jdbcType="INTEGER" property="songID"/>
+        <result column="song_source" jdbcType="VARCHAR" property="songSource"/>
+        <result column="song_url" jdbcType="VARCHAR" property="songUrl"/>
+        <result column="song_name" jdbcType="VARCHAR" property="songName"/>
+        <result column="artist_name" jdbcType="VARCHAR" property="artistName"/>
+        <result column="cover_url" jdbcType="VARCHAR" property="coverUrl"/>
+        <result column="lrc_url" jdbcType="VARCHAR" property="lrcUrl"/>
+        <result column="mp3_url" jdbcType="VARCHAR" property="mp3Url"/>
+        <result column="song_status" jdbcType="VARCHAR" property="songStatus"/>
+        <result column="play_date" jdbcType="DATE" property="playDate"/>
+    </resultMap>
+
     <insert id="insert" parameterType="cn.lefer.tomu.entity.PlayHistory" useGeneratedKeys="true"
             keyProperty="playHistoryID">
         insert into T_PLAY_HISTORY(channel_id, song_id, last_position, play_date)
@@ -27,4 +40,29 @@
             play_date     = #{playDate}
         where play_history_id = #{playHistoryID}
     </update>
+    <select id="selectByChannelID" resultMap="PlayHistoryMap">
+        select b.SONG_ID,
+               b.SONG_SOURCE,
+               b.SONG_URL,
+               b.SONG_NAME,
+               b.ARTIST_NAME,
+               b.COVER_URL,
+               b.LRC_URL,
+               b.MP3_URL,
+               b.SONG_STATUS,
+               a.PLAY_DATE
+        from T_PLAY_HISTORY a
+                 left join T_SONG b on a.SONG_ID = b.SONG_ID
+        where a.CHANNEL_ID = #{channelID}
+          and b.SONG_ID IS NOT NULL
+        order by a.PLAY_DATE desc
+        limit #{pageSize} offset (#{pageNum} - 1) * #{pageSize}
+    </select>
+    <select id="countByChannelID" resultType="Integer">
+        select count(a.PLAY_HISTORY_ID)
+        from T_PLAY_HISTORY a
+                 left join T_SONG b on a.SONG_ID = b.SONG_ID
+        where a.CHANNEL_ID = #{channelID}
+          and b.SONG_ID IS NOT NULL
+    </select>
 </mapper>

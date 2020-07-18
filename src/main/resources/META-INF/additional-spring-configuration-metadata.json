@@ -34,6 +34,11 @@
       "name": "application.slogan",
       "type": "java.lang.String",
       "description": "Description for application.slogan."
+    },
+    {
+      "name": "tomu.random.size",
+      "type": "java.lang.String",
+      "description": "Description for tomu.random.size."
     }
   ]
 }

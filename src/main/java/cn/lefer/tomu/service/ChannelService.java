@@ -1,6 +1,7 @@
 package cn.lefer.tomu.service;
 
 import cn.lefer.tomu.constant.SongSource;
+import cn.lefer.tomu.dto.PlayHistoryDTO;
 import cn.lefer.tomu.entity.Channel;
 import cn.lefer.tomu.event.ChannelEvent;
 import cn.lefer.tomu.event.detail.AbstractChannelEventDetail;
@@ -49,6 +50,8 @@ public interface ChannelService {
 
     List<SongView> getSongs(int channelID);
 
+    List<SongView> getRandomSongs();
+
     //歌单的状态是否发生变化
 
 
@@ -65,4 +68,6 @@ public interface ChannelService {
     boolean kick(int channelID, String nickName);
     //获取频道下的听众
     List<String> getAudienceWithNickName(int channelID);
+    //播放历史
+    Page<PlayHistoryDTO> getPlayHistory(int channelID, int pageNum, int pageSize);
 }

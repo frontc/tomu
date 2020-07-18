@@ -38,4 +38,7 @@ public interface SongMapper {
     List<Song> selectAll(@Param("songStatusList") List<SongStatus> songStatusList);
 
     int countByChannelIDAndMP3Url(@Param("channelID") int channelID,@Param("songStatusList") List<SongStatus> songStatusList,@Param("mp3Url") String url);
+
+    /*随机选取指定数量的歌曲*/
+    List<Song> randomSelect(@Param("songStatus") SongStatus songStatus,@Param("size") int size);
 }

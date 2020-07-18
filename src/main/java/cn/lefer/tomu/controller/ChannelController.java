@@ -1,6 +1,7 @@
 package cn.lefer.tomu.controller;
 
 import cn.lefer.tomu.dto.ChannelStatusDTO;
+import cn.lefer.tomu.dto.PlayHistoryDTO;
 import cn.lefer.tomu.dto.SongDTO;
 import cn.lefer.tomu.event.ChannelEvent;
 import cn.lefer.tomu.event.detail.AbstractChannelEventDetail;
@@ -65,6 +66,11 @@ public class ChannelController {
     @GetMapping(value = "/{channelID}/songs/all")
     public Flux<SongView> getSongsAsStream(@PathVariable("channelID") @Validated int channelID) {
         return Flux.fromStream(channelService.getSongs(channelID).stream());
+    }
+
+    @GetMapping(value = "/{channelID}/songs/random")
+    public List<SongView> getRandomSongs(){
+        return channelService.getRandomSongs();
     }
 
     //添加歌曲
@@ -139,6 +145,12 @@ public class ChannelController {
         return channelService.kick(channelID, nickName);
     }
 
+    @GetMapping(value = "/{channelID}/playHistory")
+    public Page<PlayHistoryDTO> getPlayHistory(@PathVariable("channelID") @Validated int channelID,
+                                               @RequestParam(defaultValue = "1") @Validated int pageNum,
+                                               @RequestParam(defaultValue = "20") @Validated int pageSize){
+        return channelService.getPlayHistory(channelID,pageNum,pageSize);
+    }
 
     @Autowired
     public void setChannelService(ChannelService channelService) {
