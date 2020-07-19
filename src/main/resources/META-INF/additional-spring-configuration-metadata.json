@@ -39,6 +39,11 @@
       "name": "tomu.random.size",
       "type": "java.lang.String",
       "description": "Description for tomu.random.size."
+    },
+    {
+      "name": "tomu.silence.time",
+      "type": "java.lang.String",
+      "description": "Description for tomu.silence.time."
     }
   ]
 }

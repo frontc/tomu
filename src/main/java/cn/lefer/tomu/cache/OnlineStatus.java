@@ -7,8 +7,8 @@ import cn.lefer.tools.Date.LeferDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,9 +23,11 @@ import java.util.stream.Collectors;
 @Component
 public class OnlineStatus {
     @Value("${channel.size}")
-    int channelSize;
+    int CHANNEL_SIZE;
     @Value("${idle.time}")
-    long idleTime;
+    long IDLE_TIME;
+    @Value("${tomu.silence.time}")
+    long SILENCE_TIME;
     /*
      * 1.第一次访问时，如果检测到用户标识符为空，需要前端申领标识符
      * 2.以后每次访问需要带着标识符
@@ -58,13 +60,13 @@ public class OnlineStatus {
          * */
         if (channelStatusMap.containsKey(channelID)) {
             //频道有空余座位或该用户本来就在频道内，则直接添加
-            if (channelStatusMap.get(channelID).size() < channelSize || channelStatusMap.get(channelID).containsKey(token)) {
+            if (channelStatusMap.get(channelID).size() < CHANNEL_SIZE || channelStatusMap.get(channelID).containsKey(token)) {
                 channelStatusMap.get(channelID).put(token, date);
             } else {
                 //频道没有空余座位，则开始踢人
                 channelStatusMap.get(channelID).forEach((k, v) -> clearChannelStatusMap(channelID, k, v));
                 //踢出空座位，则更新
-                if (channelStatusMap.get(channelID).size() < channelSize) {
+                if (channelStatusMap.get(channelID).size() < CHANNEL_SIZE) {
                     channelStatusMap.get(channelID).put(token, date);
                 } else {//还是无座，报座位已满
                     throw new BizRestException(BizErrorCode.CHANNEL_IS_FULL);
@@ -88,7 +90,7 @@ public class OnlineStatus {
 
     private void clearChannelStatusMap(int channelID, String k, Date v) {
         Date date = LeferDate.today();
-        Date dateBefore = new Date(date.getTime() - idleTime);
+        Date dateBefore = new Date(date.getTime() - IDLE_TIME);
         if (v.before(dateBefore)) {
             channelStatusMap.get(channelID).remove(k);
         }
@@ -102,9 +104,9 @@ public class OnlineStatus {
         return channelStatusMap.get(channelID).keySet();
     }
 
-    public boolean exit(String token,int channelID){
+    public boolean exit(String token, int channelID) {
         channelStatusMap.get(channelID).remove(token);
-        if(channelID==userStatusMap.get(token).getChannelID()){
+        if (channelID == userStatusMap.get(token).getChannelID()) {
             userStatusMap.remove(token);
         }
         return true;
@@ -129,5 +131,20 @@ public class OnlineStatus {
         public void setUpdateDate(Date updateDate) {
             this.updateDate = updateDate;
         }
+    }
+
+    public List<String> clear() {
+        Date date = LeferDate.today();
+        Date dateBefore = new Date(date.getTime() - SILENCE_TIME);
+        List<String> silenceUsers = new ArrayList<>();
+        userStatusMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().getUpdateDate().before(dateBefore))
+                .forEach(entry -> {
+                    channelStatusMap.get(entry.getValue().getChannelID()).remove(entry.getKey());
+                    userStatusMap.remove(entry.getKey());
+                    silenceUsers.add(entry.getKey());
+                });
+        return silenceUsers;
     }
 }

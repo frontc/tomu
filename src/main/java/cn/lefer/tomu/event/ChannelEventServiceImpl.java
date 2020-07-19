@@ -55,6 +55,11 @@ public class ChannelEventServiceImpl implements ChannelEventService {
     }
 
     @Override
+    public void delete(String key){
+        cache.remove(key);
+    }
+
+    @Override
     public boolean isEmpty(String key) {
         return cache.getOrDefault(key, new LinkedList<>()).peek()==null;
     }
